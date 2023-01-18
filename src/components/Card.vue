@@ -11,11 +11,13 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
 const props = defineProps({
     status: { type: Number, require: true, default: 0 },  // 0: None, 1: Stop, 2: Playing
 });
 
-const visual = ref(true);
+const visual = ref(false);
 </script>
 
 <style scoped lang="less">

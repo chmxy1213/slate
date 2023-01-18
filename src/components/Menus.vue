@@ -46,8 +46,9 @@ const navRouteName = new Map([
     [2, "like"],
 ]);
 const navClick = function (i) {
-    let newNavFocus = navFocus.value.map(() => false);
-    navFocus.value = newNavFocus;
+    for (let i = 0; i < 3; i++) {
+        navFocus.value[i] = false;
+    }
     navFocus.value[i] = true
     router.push({ name: navRouteName.get(i) })
 }

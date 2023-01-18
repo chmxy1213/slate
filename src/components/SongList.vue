@@ -9,6 +9,8 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
+
 const songLists = ref([
     { name: "歌单1", slid: "111" },
     { name: "歌单2", slid: "222" },

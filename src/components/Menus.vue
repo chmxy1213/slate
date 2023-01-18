@@ -5,7 +5,7 @@
                 <li class="list" :class="{ 'active': navFocus[0] }">
                     <a href="#" @click="navClick(0)">
                         <span class="icon">
-                            <img src="../assets/ico/home.svg">
+                            <img src="../assets/icon/home.svg">
                         </span>
                         <span class="text">主页</span>
                     </a>
@@ -13,7 +13,7 @@
                 <li class="list" :class="{ 'active': navFocus[1] }">
                     <a href="#" @click="navClick(1)">
                         <span class="icon">
-                            <img src="../assets/ico/search.svg">
+                            <img src="../assets/icon/search.svg">
                         </span>
                         <span class="text">搜索</span>
                     </a>
@@ -21,7 +21,7 @@
                 <li class="list" :class="{ 'active': navFocus[2] }">
                     <a href="#" @click="navClick(2)">
                         <span class="icon">
-                            <img src="../assets/ico/lib.svg">
+                            <img src="../assets/icon/lib.svg">
                         </span>
                         <span class="text">音乐库</span>
                     </a>

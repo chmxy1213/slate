@@ -11,13 +11,16 @@
 			</nav>
 			<RouterView class="box"/>
 		</div>
-		<div class="player">播放栏</div>
+		<div class="player">
+			<Player/>
+		</div>
 	</div>
 </template>
 
 <script setup>
 import "./assets/css/base.css";
 import Menus from "./components/Menus.vue";
+import Player from "./components/Player.vue";
 </script>
 
 <style scoped lang="less">
@@ -75,10 +78,10 @@ import Menus from "./components/Menus.vue";
 		grid-row-end: 20;
 		background-color: #181818;
 		border-top: 1px solid #282828;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
+		// display: flex;
+		// flex-direction: column;
+		// justify-content: center;
+		// align-items: center;
 	}
 }
 </style>

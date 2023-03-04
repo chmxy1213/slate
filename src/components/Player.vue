@@ -62,19 +62,32 @@ const playStyle = ref({
 // Audio对象
 const audio = ref(null);
 
-// TEST 歌曲名
-const musicName = ref("大笨钟-刘瑞琦");
-
-// 歌曲信息数组
+// TEST 歌曲信息数组
 const musicList = ref([
     {
         name: "大笨钟",
         author: "刘瑞琦",
         url: "/mp3/大笨钟-刘瑞琦.m4a",
     },
+    {
+        name: "简单爱",
+        author: "刘瑞琦",
+        url: "/mp3/简单爱-刘瑞琦.m4a",
+    },
+    {
+        name: "夏天的风",
+        author: "刘瑞琦",
+        url: "/mp3/夏天的风-刘瑞琦.m4a",
+    },
 ]);
 
-// 绑定到dom上的歌曲名和歌曲作者
+// TEST 当前歌曲在list中的索引位置
+const musicIndex = ref({
+    index: 0,
+    max: musicList.value.length,
+});
+
+// TEST 绑定到dom上的歌曲名和歌曲作者
 const musicDomInfo = ref({
     name: "",
     author: "",
@@ -122,12 +135,28 @@ async function playEvent(_event) {
 
 // TODO 上一首事件
 function upEvent(_event) {
-    console.log("上一首");
+    if (musicIndex.value.index == 0) {
+        return;
+    }
+    musicIndex.value.index--;
+    audio.value.pause();
+    audio.value.src = musicList.value[musicIndex.value.index].url;
+    musicDomInfo.value.name = musicList.value[musicIndex.value.index].name;
+    musicDomInfo.value.author = musicList.value[musicIndex.value.index].author;
+    audio.value.play();
 }
 
 // TODO 下一首事件
 function downEvent(_event) {
-    console.log("下一首");
+    if (musicIndex.value.index >= musicIndex.value.max) {
+        return;
+    }
+    musicIndex.value.index++;
+    audio.value.pause();
+    audio.value.src = musicList.value[musicIndex.value.index].url;
+    musicDomInfo.value.name = musicList.value[musicIndex.value.index].name;
+    musicDomInfo.value.author = musicList.value[musicIndex.value.index].author;
+    audio.value.play();
 }
 
 // 更新当前音频播放时间

@@ -4,7 +4,7 @@
             <div class="cover-img"><img :src="musicDomInfo.cover_url"></div>
             <div class="music-info">
                 <div class="music-name"><a href="">{{ musicDomInfo.name }}</a></div>
-                <div class="music-author"><a href="#">{{ musicDomInfo.author }}</a></div>
+                <div class="music-artist"><a href="#">{{ musicDomInfo.artist }}</a></div>
             </div>
         </div>
         <div class="player">
@@ -67,19 +67,19 @@ const audio = ref(null);
 const musicList = ref([
     {
         name: "大笨钟",
-        author: "刘瑞琦",
+        artist: "刘瑞琦",
         url: "/mp3/大笨钟-刘瑞琦.m4a",
         cover_url: "/cover/本草纲目.jpg"
     },
     {
         name: "简单爱",
-        author: "刘瑞琦",
+        artist: "刘瑞琦",
         url: "/mp3/简单爱-刘瑞琦.m4a",
         cover_url: "/cover/感官先生.jpg"
     },
     {
         name: "夏天的风",
-        author: "刘瑞琦",
+        artist: "刘瑞琦",
         url: "/mp3/夏天的风-刘瑞琦.m4a",
         cover_url: "/cover/我的名字.jpg"
     },
@@ -94,7 +94,7 @@ const musicIndex = ref({
 // TEST 绑定到dom上的歌曲名和歌曲作者
 const musicDomInfo = ref({
     name: "",
-    author: "",
+    artist: "",
     cover_url: ""
 });
 
@@ -141,7 +141,7 @@ function upEvent(_event) {
     audio.value.pause();
     audio.value.src = musicList.value[musicIndex.value.index].url;
     musicDomInfo.value.name = musicList.value[musicIndex.value.index].name;
-    musicDomInfo.value.author = musicList.value[musicIndex.value.index].author;
+    musicDomInfo.value.artist = musicList.value[musicIndex.value.index].artist;
     musicDomInfo.value.cover_url = musicList.value[musicIndex.value.index].cover_url;
     audio.value.play();
     playState.value.status = true;
@@ -156,7 +156,7 @@ function downEvent(_event) {
     audio.value.pause();
     audio.value.src = musicList.value[musicIndex.value.index].url;
     musicDomInfo.value.name = musicList.value[musicIndex.value.index].name;
-    musicDomInfo.value.author = musicList.value[musicIndex.value.index].author;
+    musicDomInfo.value.artist = musicList.value[musicIndex.value.index].artist;
     musicDomInfo.value.cover_url = musicList.value[musicIndex.value.index].cover_url;
     audio.value.play();
     playState.value.status = true;
@@ -219,7 +219,7 @@ onBeforeMount(() => {
     // 音频播放位置改变事件
     audio.value.addEventListener("timeupdate", updateCurTime);
     musicDomInfo.value.name = musicList.value[0].name;
-    musicDomInfo.value.author = musicList.value[0].author;
+    musicDomInfo.value.artist = musicList.value[0].artist;
     musicDomInfo.value.cover_url = musicList.value[0].cover_url;
 });
 
@@ -276,7 +276,7 @@ onMounted(() => {
                 font-size: 20px;
                 text-align: center;
             }
-            .music-author {
+            .music-artist {
                 a {
                     color: #999999;
                 }

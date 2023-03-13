@@ -1,10 +1,10 @@
 <template>
     <div class="box">
         <div class="cover">
-            <div class="cover-img"></div>
+            <div class="cover-img"><img :src="musicDomInfo.cover_url"></div>
             <div class="music-info">
-                <div class="music-name">{{ musicDomInfo.name }}</div>
-                <div class="music-author">{{ musicDomInfo.author }}</div>
+                <div class="music-name"><a href="">{{ musicDomInfo.name }}</a></div>
+                <div class="music-author"><a href="#">{{ musicDomInfo.author }}</a></div>
             </div>
         </div>
         <div class="player">
@@ -16,7 +16,8 @@
                 </div>
                 <div class="control">
                     <div class="button play-pause">
-                        <i class="fa fa-play" :class="[ playState.status ? playStyle.play : playStyle.pause ]" @click="playEvent"></i>
+                        <i class="fa fa-play" :class="[playState.status ? playStyle.play : playStyle.pause]"
+                            @click="playEvent"></i>
                     </div>
                 </div>
                 <div class="control">
@@ -28,7 +29,7 @@
             <div class="progress-box">
                 <div class="now-time">{{ playState.cur_time }}</div>
                 <div id="bar" class="all-bar a" @click="clickBarEvent">
-                    <div class="progress-bar" :style="{ width: playState.play_progress + '%' }" ></div>
+                    <div class="progress-bar" :style="{ width: playState.play_progress + '%' }"></div>
                 </div>
                 <div class="all-time">{{ playState.dur_time }}</div>
             </div>
@@ -68,16 +69,19 @@ const musicList = ref([
         name: "大笨钟",
         author: "刘瑞琦",
         url: "/mp3/大笨钟-刘瑞琦.m4a",
+        cover_url: "/cover/本草纲目.jpg"
     },
     {
         name: "简单爱",
         author: "刘瑞琦",
         url: "/mp3/简单爱-刘瑞琦.m4a",
+        cover_url: "/cover/感官先生.jpg"
     },
     {
         name: "夏天的风",
         author: "刘瑞琦",
         url: "/mp3/夏天的风-刘瑞琦.m4a",
+        cover_url: "/cover/我的名字.jpg"
     },
 ]);
 
@@ -91,7 +95,10 @@ const musicIndex = ref({
 const musicDomInfo = ref({
     name: "",
     author: "",
+    cover_url: ""
 });
+
+// TEST: 获取歌曲url ["/song/url?id=33894312", "song/url/v1?id=33894312&level=exhigh", "/song/url/v1?id=405998841,33894312&level=lossless"]
 
 // 点击播放条事件
 function clickBarEvent(event) {
@@ -123,14 +130,6 @@ async function playEvent(_event) {
     playState.value.status = !playState.value.status;
 
     playState.value.status ? audio.value.play() : audio.value.pause();
-
-    // if (playState.value.status) {
-    //     // 播放状态
-    //     audio.value.play();
-    // } else {
-    //     // 暂停状态
-    //     audio.value.pause();
-    // }
 }
 
 // TODO 上一首事件
@@ -143,7 +142,9 @@ function upEvent(_event) {
     audio.value.src = musicList.value[musicIndex.value.index].url;
     musicDomInfo.value.name = musicList.value[musicIndex.value.index].name;
     musicDomInfo.value.author = musicList.value[musicIndex.value.index].author;
+    musicDomInfo.value.cover_url = musicList.value[musicIndex.value.index].cover_url;
     audio.value.play();
+    playState.value.status = true;
 }
 
 // TODO 下一首事件
@@ -156,7 +157,9 @@ function downEvent(_event) {
     audio.value.src = musicList.value[musicIndex.value.index].url;
     musicDomInfo.value.name = musicList.value[musicIndex.value.index].name;
     musicDomInfo.value.author = musicList.value[musicIndex.value.index].author;
+    musicDomInfo.value.cover_url = musicList.value[musicIndex.value.index].cover_url;
     audio.value.play();
+    playState.value.status = true;
 }
 
 // 更新当前音频播放时间
@@ -204,6 +207,7 @@ function updateCurTime() {
         // 更改播放样式
         playState.value.play_progress = 0;
         playState.value.cur_time = "00:00";
+        playState.value.status = false;
     }
 }
 
@@ -216,6 +220,7 @@ onBeforeMount(() => {
     audio.value.addEventListener("timeupdate", updateCurTime);
     musicDomInfo.value.name = musicList.value[0].name;
     musicDomInfo.value.author = musicList.value[0].author;
+    musicDomInfo.value.cover_url = musicList.value[0].cover_url;
 });
 
 onMounted(() => {
@@ -240,14 +245,44 @@ onMounted(() => {
 
     .cover {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         flex-grow: 0;
         justify-content: center;
         align-items: center;
         border: 1px antiquewhite solid; // test
         float: left;
+
+        .cover-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            // position: absolute;
+            box-shadow: 0px 0px 0px 5px #fff;
+            overflow: hidden;
+            transition: 0.3s ease;
+            margin: 5px;
+            img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
         .music-info {
             padding: 10px;
+            .music-name {
+                a {
+                    color: #f7f7f7;
+                }
+                font-size: 20px;
+                text-align: center;
+            }
+            .music-author {
+                a {
+                    color: #999999;
+                }
+                font-size: 14px;
+                text-align: center;
+            }
         }
     }
 
@@ -327,6 +362,7 @@ onMounted(() => {
                     pointer-events: none; // 禁用鼠标事件
                 }
             }
+
             .all-bar:hover {
                 .progress-bar {
                     background-color: @barHoverColor;

@@ -6,22 +6,27 @@
                 <div class="music-name"><a href="">{{ musicDomInfo.name }}</a></div>
                 <div class="music-artist"><a href="#">{{ musicDomInfo.artist }}</a></div>
             </div>
+            <div class="fav-btn">
+                <a href="#">
+                    <img src="/fav.svg" style="width: 25px;height: 25px;"/>
+                </a>
+            </div>
         </div>
         <div class="player">
             <div class="play-controls">
                 <div class="control">
-                    <div class="button play-prev">
+                    <div class="button play-prev" title="上一首">
                         <i class="fa fa-step-backward" @click="upEvent"></i>
                     </div>
                 </div>
                 <div class="control">
-                    <div class="button play-pause">
-                        <i class="fa fa-play" :class="[playState.status ? playStyle.play : playStyle.pause]"
+                    <div class="button play-pause" title="播放">
+                        <i alt="ggg" class="fa fa-play" :class="[playState.status ? playStyle.play : playStyle.pause]"
                             @click="playEvent"></i>
                     </div>
                 </div>
                 <div class="control">
-                    <div class="button play-next">
+                    <div class="button play-next" title="下一首">
                         <i class="fa fa-step-forward" @click="downEvent"></i>
                     </div>
                 </div>
@@ -63,7 +68,7 @@ const playStyle = ref({
 // Audio对象
 const audio = ref(null);
 
-// TEST 歌曲信息数组
+// TEST 歌曲信息数组[本地]
 const musicList = ref([
     {
         name: "大笨钟",
@@ -84,6 +89,16 @@ const musicList = ref([
         cover_url: "/cover/我的名字.jpg"
     },
 ]);
+
+/*=================================== 网络播放版本 ================================================*/
+// TEST: 歌曲ID数组(歌曲列表)
+const musicIDS = [65533, 65528, 1974443814, 65533, 65536, 28563317, 65538];
+// TEST: 歌曲详情信息列表
+const musicInfos = ref([]);
+// TEST: 当前播放音乐信息
+const currMusicInfo = ref({});
+/*==============================================================================================*/
+
 
 // TEST 当前歌曲在list中的索引位置
 const musicIndex = ref({
@@ -124,15 +139,12 @@ function clickBarEvent(event) {
 
 // 播放事件
 async function playEvent(_event) {
-    // let res = await invoke("greet", { name: "Dave" });
-    // console.log(res);
-
     playState.value.status = !playState.value.status;
 
     playState.value.status ? audio.value.play() : audio.value.pause();
 }
 
-// TODO 上一首事件
+// 上一首事件
 function upEvent(_event) {
     if (musicIndex.value.index == 0) {
         return;
@@ -147,7 +159,7 @@ function upEvent(_event) {
     playState.value.status = true;
 }
 
-// TODO 下一首事件
+// 下一首事件
 function downEvent(_event) {
     if (musicIndex.value.index >= musicIndex.value.max) {
         return;
@@ -211,23 +223,89 @@ function updateCurTime() {
     }
 }
 
+/*==================================== version 2 =====================================*/
+// TEST: 根据音乐ID获取歌曲详细信息
+async function getMusicDetail(id) {
+    let info = await invoke("get_music_detail", { id });
+    if (info.code === 200) {
+        return info.songs[0];
+    } else {
+        console.log(`请求音乐详情失败：${id}`);
+    }
+}
+
+// TEST： 获取列表所有音乐的详细信息
+async function getAllMusicDetail(ids) {
+    await ids.forEach(async (id) => {
+        let obj = await getMusicDetail(id);
+        musicInfos.value.push(obj);
+    });
+}
+
+// TEST: 设置默认播放音乐
+async function setDefaultMusic() {
+    setTimeout(async () => {
+        // 设置当前音乐对象
+        let _currMusicInfo = {
+            id: musicInfos.value[0].id,
+            name: musicInfos.value[0].name,
+            dt: musicInfos.value[0].dt,
+            picUrl: musicInfos.value[0].al.picUrl,
+            url: "",
+        };
+        let musicUrlJson = await invoke("get_music_url", { id: _currMusicInfo.id });
+
+        if (musicUrlJson.code !== 200) {
+            console.log(`请求music url 失败! id: ${_currMusicInfo.id}`);
+        } else {
+            _currMusicInfo.url = musicUrlJson.data[0].url;
+        }
+        currMusicInfo.value = _currMusicInfo;
+        console.log(`当前音乐: ${currMusicInfo.value}`);
+        console.log(`当前音乐: ${JSON.stringify(currMusicInfo.value)}`);
+
+        audio.value = new Audio();  // 创建音频对象
+        audio.value.loop = false;   // 不循环播放
+        console.log(JSON.stringify(currMusicInfo.value));
+        // TODO
+        // audio.value.src = currMusicInfo.value.url;
+        audio.value.addEventListener("timeupdate", updateCurTime);
+        musicDomInfo.value.name = currMusicInfo.value.name;
+        musicDomInfo.value.artist = "空";  // TODO： 歌手还没做
+        musicDomInfo.value.cover_url = currMusicInfo.value.picUrl;
+    }, 1000);
+}
+/*===================================================================================*/
+
 // 在此初始化
-onBeforeMount(() => {
-    audio.value = new Audio();  // 创建音频对象
-    audio.value.loop = false;   // 不循环播放
-    audio.value.src = musicList.value[0].url;
-    // 音频播放位置改变事件
-    audio.value.addEventListener("timeupdate", updateCurTime);
-    musicDomInfo.value.name = musicList.value[0].name;
-    musicDomInfo.value.artist = musicList.value[0].artist;
-    musicDomInfo.value.cover_url = musicList.value[0].cover_url;
+onBeforeMount(async () => {
+    // 音频播放位置改变事件 v1
+    // audio.value = new Audio();  // 创建音频对象
+    // audio.value.loop = false;   // 不循环播放
+    // audio.value.src = musicList.value[0].url;
+    // audio.value.addEventListener("timeupdate", updateCurTime);
+    // musicDomInfo.value.name = musicList.value[0].name;
+    // musicDomInfo.value.artist = musicList.value[0].artist;
+    // musicDomInfo.value.cover_url = musicList.value[0].cover_url;
+    // v1 
+
+    // v2
+    // 请求音乐详情
+    await getAllMusicDetail(musicIDS);
+    await setDefaultMusic();
+    // audio.value = new Audio();  // 创建音频对象
+    // audio.value.loop = false;   // 不循环播放
+    // console.log(JSON.stringify(currMusicInfo.value));
+    // audio.value.src = currMusicInfo.value.url;
+    // audio.value.addEventListener("timeupdate", updateCurTime);
+    // musicDomInfo.value.name = currMusicInfo.value.name;
+    // musicDomInfo.value.artist = "空";  // TODO： 歌手还没做
+    // musicDomInfo.value.cover_url = currMusicInfo.value.picUrl;
+    // v2
 });
 
 onMounted(() => {
-
 });
-
-
 </script>
 
 <style lang="less" scoped>
@@ -237,11 +315,14 @@ onMounted(() => {
 @barHoverColor: #1db954;
 
 .box {
+    width: 100%;
+    height: 100%;
     display: flex;
     // justify-content: center;
     align-items: center;
     flex-direction: row;
-    border: 1px antiquewhite solid; // test
+    justify-content: center;
+    // border: 1px antiquewhite solid; // test
 
     .cover {
         display: flex;
@@ -249,18 +330,20 @@ onMounted(() => {
         flex-grow: 0;
         justify-content: center;
         align-items: center;
-        border: 1px antiquewhite solid; // test
+        align-content: center;
+        // border: 1px antiquewhite solid; // test
         float: left;
 
         .cover-img {
             width: 60px;
             height: 60px;
-            border-radius: 50%;
+            // border-radius: 50%;
             // position: absolute;
-            box-shadow: 0px 0px 0px 5px #fff;
+            // box-shadow: 0px 0px 0px 5px #fff;
             overflow: hidden;
             transition: 0.3s ease;
             margin: 5px;
+
             img {
                 width: 100%;
                 height: 100%;
@@ -269,19 +352,23 @@ onMounted(() => {
 
         .music-info {
             padding: 10px;
+
             .music-name {
                 a {
                     color: #f7f7f7;
                 }
-                font-size: 20px;
-                text-align: center;
+
+                font-size: 15px;
+                text-align: start;
             }
+
             .music-artist {
                 a {
                     color: #999999;
                 }
-                font-size: 14px;
-                text-align: center;
+
+                font-size: 5px;
+                text-align: start;
             }
         }
     }
@@ -289,7 +376,7 @@ onMounted(() => {
     .player {
         display: flex;
         flex-direction: column;
-        border: 1px antiquewhite solid; // test
+        // border: 1px antiquewhite solid; // test
         text-align: center;
         justify-content: center;
         flex-grow: 1;
@@ -299,7 +386,7 @@ onMounted(() => {
             flex-direction: row;
             justify-content: center;
             align-items: center;
-            border-bottom: white 1px solid;
+            // border-bottom: white 1px solid; // test
 
             .button {
                 margin: 5px 0px 5px 0px;

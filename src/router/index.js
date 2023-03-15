@@ -23,6 +23,11 @@ const router = createRouter({
 			name: 'like',
 			component: () => import('../view/Like.vue'),
 		},
+		{
+			path: '/playlist',
+			name: "playList",
+			component: () => import("../view/PlayList.vue")
+		},
 	]
 });
 

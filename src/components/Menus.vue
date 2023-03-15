@@ -5,7 +5,8 @@
                 <li class="list" :class="{ 'active': navFocus[0] }">
                     <a href="#" @click="navClick(0)">
                         <span class="icon">
-                            <img src="../assets/icon/home.svg">
+                            <!-- <img src="../assets/icon/home.svg"> -->
+                            <img src="/svg/home.svg">
                         </span>
                         <span class="text">主页</span>
                     </a>
@@ -90,8 +91,10 @@ const navClick = function (i) {
 
                         img {
                             transition: .5s;
-                            transform: translateX(20px);
-                            filter: drop-shadow(#f2f2f2 -20px 0px 0px);
+                            width: 20px;
+                            height: 20px;
+                            // transform: translateX(20px);
+                            // filter: drop-shadow(#f2f2f2 -20px 0px 0px);
                         }
                     }
 
@@ -118,8 +121,8 @@ const navClick = function (i) {
                     overflow: hidden;
 
                     img {
-                        transform: translateX(32px);
-                        filter: drop-shadow(skyblue -32px 0px 0px);
+                        // transform: translateX(32px);
+                        // filter: drop-shadow(skyblue -32px 0px 0px);
                     }
                 }
             }

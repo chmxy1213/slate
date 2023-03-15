@@ -39,12 +39,14 @@
                 <div class="all-time">{{ playState.dur_time }}</div>
             </div>
         </div>
+        <VolumeStrip/>
     </div>
 </template>
 
 <script setup>
 import { onBeforeMount, onMounted, ref, watch } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
+import VolumeStrip from "./VolumeStrip.vue";
 
 // 播放栏状态
 const playState = ref({
@@ -251,6 +253,7 @@ async function setDefaultMusic() {
             name: musicInfos.value[0].name,
             dt: musicInfos.value[0].dt,
             picUrl: musicInfos.value[0].al.picUrl,
+            artists: musicInfos.value[0].ar,
             url: "",
         };
         let musicUrlJson = await invoke("get_music_url", { id: _currMusicInfo.id });
@@ -268,12 +271,27 @@ async function setDefaultMusic() {
         audio.value.loop = false;   // 不循环播放
         console.log(JSON.stringify(currMusicInfo.value));
         // TODO
-        // audio.value.src = currMusicInfo.value.url;
+        audio.value.src = currMusicInfo.value.url;
         audio.value.addEventListener("timeupdate", updateCurTime);
         musicDomInfo.value.name = currMusicInfo.value.name;
-        musicDomInfo.value.artist = "空";  // TODO： 歌手还没做
+        let artists_str = "";
+        currMusicInfo.value.artists.forEach((value) => {
+            artists_str += `${value.name},`
+        });
+        artists_str = artists_str.replace(/^(\s|,)+|(\s|,)+$/g, '');
+        musicDomInfo.value.artist = artists_str;
         musicDomInfo.value.cover_url = currMusicInfo.value.picUrl;
     }, 1000);
+
+    // TEST: 音量测试
+    // let v = 1;
+    // setInterval(() => {
+    //     if (v >= 0) {
+    //         audio.value.volume = v;
+    //         v -= 0.1;
+    //         console.log(`volume: ${v}`);
+    //     }
+    // }, 2000);
 }
 /*===================================================================================*/
 
@@ -318,7 +336,6 @@ onMounted(() => {
     width: 100%;
     height: 100%;
     display: flex;
-    // justify-content: center;
     align-items: center;
     flex-direction: row;
     justify-content: center;
@@ -352,7 +369,6 @@ onMounted(() => {
 
         .music-info {
             padding: 10px;
-
             .music-name {
                 a {
                     color: #f7f7f7;
@@ -374,9 +390,9 @@ onMounted(() => {
     }
 
     .player {
+        // border: 1px antiquewhite solid; // test
         display: flex;
         flex-direction: column;
-        // border: 1px antiquewhite solid; // test
         text-align: center;
         justify-content: center;
         flex-grow: 1;
@@ -385,7 +401,7 @@ onMounted(() => {
             display: flex;
             flex-direction: row;
             justify-content: center;
-            align-items: center;
+            align-items: c1enter;
             // border-bottom: white 1px solid; // test
 
             .button {
@@ -398,6 +414,8 @@ onMounted(() => {
                 font-size: 25px;
                 display: flex;
                 align-items: center;
+                padding: 1px;
+                margin: 0;
             }
 
             .play-prev {
@@ -428,7 +446,7 @@ onMounted(() => {
             .all-bar {
                 width: 40%;
                 background-color: #5e5e5e;
-                height: 4px;
+                height: 5px;
                 border-radius: 4px;
                 // z-index: auto;
                 position: relative;

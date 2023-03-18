@@ -39,7 +39,6 @@
                 <div class="all-time">{{ playState.dur_time }}</div>
             </div>
         </div>
-        <!-- <VolumeStrip/> -->
         <div class="tools">
             <div class="volume" title="音量调节">
                 <img class="icon" src="/svg/volume.svg" alt="音量调节">
@@ -54,7 +53,6 @@
 <script setup>
 import { onBeforeMount, onMounted, ref, watch } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
-import VolumeStrip from "./VolumeStrip.vue";
 
 // 播放栏状态
 const playState = ref({

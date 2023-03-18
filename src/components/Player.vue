@@ -40,10 +40,13 @@
             </div>
         </div>
         <div class="tools">
-            <div class="volume" title="音量调节">
+            <div class="volume-value">
+                <p>{{ volumeState }}%</p>
+            </div>
+            <div id="id-volume" class="volume" :title="'音量:' + volumeState">
                 <img class="icon" src="/svg/volume.svg" alt="音量调节">
             </div>
-            <div class="play-list" title="播放列表">
+            <div class="play-list" title="播放列表" @click="goPlayList">
                 <img  class="icon" src="/svg/list-icon.svg" alt="播放列表">
             </div>
         </div>
@@ -53,6 +56,9 @@
 <script setup>
 import { onBeforeMount, onMounted, ref, watch } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 // 播放栏状态
 const playState = ref({
@@ -120,6 +126,9 @@ const musicDomInfo = ref({
     artist: "",
     cover_url: ""
 });
+
+// TEST: 音量
+const volumeState = ref(50);
 
 // TEST: 获取歌曲url ["/song/url?id=33894312", "song/url/v1?id=33894312&level=exhigh", "/song/url/v1?id=405998841,33894312&level=lossless"]
 
@@ -301,6 +310,10 @@ async function setDefaultMusic() {
 }
 /*===================================================================================*/
 
+function goPlayList() {
+    router.push({ name: "playList" });
+}
+
 // 在此初始化
 onBeforeMount(async () => {
     // 音频播放位置改变事件 v1
@@ -329,6 +342,15 @@ onBeforeMount(async () => {
 });
 
 onMounted(() => {
+    let volumeDom = document.getElementById("id-volume");
+    volumeDom.addEventListener("mousewheel", (event => {
+        if (event.deltaY == -125 && volumeState.value < 100) {
+            volumeState.value += 5;
+        } else if(event.deltaY == 125 && volumeState.value > 0) {
+            volumeState.value -= 5;
+        }
+        audio.value.volume = volumeState.value / 100.0;
+    }));
 });
 </script>
 
@@ -488,8 +510,16 @@ onMounted(() => {
         display: flex;
         justify-content: center;
         align-items: center;
-
+        .volume-value {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 5px;
+        }
         .volume {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
             .icon {
                 width: 28px;
@@ -498,6 +528,9 @@ onMounted(() => {
             margin-right: 10px;
         }
         .play-list {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
             .icon {
                 width: 28px;

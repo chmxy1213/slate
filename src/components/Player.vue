@@ -8,7 +8,7 @@
             </div>
             <div class="fav-btn">
                 <a href="#">
-                    <img src="/fav.svg" style="width: 25px;height: 25px;"/>
+                    <img src="/fav.svg" style="width: 25px;height: 25px;" />
                 </a>
             </div>
         </div>
@@ -39,7 +39,15 @@
                 <div class="all-time">{{ playState.dur_time }}</div>
             </div>
         </div>
-        <VolumeStrip/>
+        <!-- <VolumeStrip/> -->
+        <div class="tools">
+            <div class="volume" title="音量调节">
+                <img class="icon" src="/svg/volume.svg" alt="音量调节">
+            </div>
+            <div class="play-list" title="播放列表">
+                <img  class="icon" src="/svg/list-icon.svg" alt="播放列表">
+            </div>
+        </div>
     </div>
 </template>
 
@@ -369,6 +377,7 @@ onMounted(() => {
 
         .music-info {
             padding: 10px;
+
             .music-name {
                 a {
                     color: #f7f7f7;
@@ -474,6 +483,29 @@ onMounted(() => {
                     transition: .5s ease;
                 }
             }
+        }
+    }
+
+    .tools {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .volume {
+            cursor: pointer;
+            .icon {
+                width: 28px;
+                height: 28px;
+            }
+            margin-right: 10px;
+        }
+        .play-list {
+            cursor: pointer;
+            .icon {
+                width: 28px;
+                height: 28px;
+            }
+            margin-right: 10px;
         }
     }
 }</style>

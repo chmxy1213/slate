@@ -18,9 +18,35 @@
 </template>
 
 <script setup>
+import { onBeforeMount, onMounted } from "vue";
 import "./assets/css/base.css";
 import Menus from "./components/Menus.vue";
 import Player from "./components/Player.vue";
+import { useMusicStore } from "./stores/music";
+
+const { music, load, play, pause } = useMusicStore();
+
+let ids = [28731108, 34274470, 65533, 65528, 1974443814, 65536, 28563317, 65538];
+
+onBeforeMount(async () => {
+	let idx = 0;
+	music.info.id = ids[idx];
+	await load();
+	// play();
+	// console.log(`playing ${idx}`);
+
+	// setInterval(async () => {
+	// 	if (idx < ids.length) {
+	// 		idx++;
+	// 	} else {
+	// 		idx = 0;
+	// 	}
+	// 	music.info.id = ids[idx];
+	// 	await load();
+	// 	play();
+	// 	console.log(`playing ${idx}`);
+	// }, 20000);
+});
 </script>
 
 <style scoped lang="less">

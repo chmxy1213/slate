@@ -1,10 +1,10 @@
 <template>
     <div class="box">
         <div class="cover">
-            <div class="cover-img"><img :src="musicDomInfo.cover_url"></div>
+            <div class="cover-img"><img :src="music.info.picUrl"></div>
             <div class="music-info">
-                <div class="music-name"><a href="">{{ musicDomInfo.name }}</a></div>
-                <div class="music-artist"><a href="#">{{ musicDomInfo.artist }}</a></div>
+                <div class="music-name"><a href="">{{ music.info.name }}</a></div>
+                <div class="music-artist"><a href="#">{{ music.info.artists }}</a></div>
             </div>
             <div class="fav-btn">
                 <a href="#">
@@ -21,7 +21,7 @@
                 </div>
                 <div class="control">
                     <div class="button play-pause" title="播放">
-                        <i alt="ggg" class="fa fa-play" :class="[playState.status ? playStyle.play : playStyle.pause]"
+                        <i alt="ggg" class="fa fa-play" :class="[music.playStatus ? playStyle.play : playStyle.pause]"
                             @click="playEvent"></i>
                     </div>
                 </div>
@@ -41,13 +41,13 @@
         </div>
         <div class="tools">
             <div class="volume-value">
-                <p>{{ volumeState }}%</p>
+                <p>{{ playState.volume }}%</p>
             </div>
-            <div id="id-volume" class="volume" :title="'音量:' + volumeState">
+            <div id="id-volume" class="volume" :title="'音量:' + playState.volume">
                 <img class="icon" src="/svg/volume.svg" alt="音量调节">
             </div>
             <div class="play-list" title="播放列表" @click="goPlayList">
-                <img  class="icon" src="/svg/list-icon.svg" alt="播放列表">
+                <img class="icon" src="/svg/list-icon.svg" alt="播放列表">
             </div>
         </div>
     </div>
@@ -57,12 +57,16 @@
 import { onBeforeMount, onMounted, ref, watch } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useRouter } from "vue-router";
+import { useMusicStore } from "../stores/music.js";
 
 const router = useRouter();
+const { music, load, play, pause } = useMusicStore();
+
+// 65533, 65528, 1974443814, 65533, 65536, 28563317, 65538
 
 // 播放栏状态
 const playState = ref({
-    status: false,      // 播放状态【暂停|播放】
+    volume: 50,         // 音量百分比
     c_minutes: 0,       // 点击播放位置【分】
     c_seconds: 0,       // 点击播放位置【秒】
     cur_minutes: 0,     // 当前播放位置【分】
@@ -72,65 +76,13 @@ const playState = ref({
     dur_minutes: 0,     // 音频总时长【分】
     dur_time: "00:00",  // 总时间【string】
     play_progress: 0,   // 音频播放进度
-})
+});
+
 // 播放按钮样式：播放，暂停
 const playStyle = ref({
     play: "fa-pause",
     pause: "fa-play",
 });
-
-// Audio对象
-const audio = ref(null);
-
-// TEST 歌曲信息数组[本地]
-const musicList = ref([
-    {
-        name: "大笨钟",
-        artist: "刘瑞琦",
-        url: "/mp3/大笨钟-刘瑞琦.m4a",
-        cover_url: "/cover/本草纲目.jpg"
-    },
-    {
-        name: "简单爱",
-        artist: "刘瑞琦",
-        url: "/mp3/简单爱-刘瑞琦.m4a",
-        cover_url: "/cover/感官先生.jpg"
-    },
-    {
-        name: "夏天的风",
-        artist: "刘瑞琦",
-        url: "/mp3/夏天的风-刘瑞琦.m4a",
-        cover_url: "/cover/我的名字.jpg"
-    },
-]);
-
-/*=================================== 网络播放版本 ================================================*/
-// TEST: 歌曲ID数组(歌曲列表)
-const musicIDS = [65533, 65528, 1974443814, 65533, 65536, 28563317, 65538];
-// TEST: 歌曲详情信息列表
-const musicInfos = ref([]);
-// TEST: 当前播放音乐信息
-const currMusicInfo = ref({});
-/*==============================================================================================*/
-
-
-// TEST 当前歌曲在list中的索引位置
-const musicIndex = ref({
-    index: 0,
-    max: musicList.value.length,
-});
-
-// TEST 绑定到dom上的歌曲名和歌曲作者
-const musicDomInfo = ref({
-    name: "",
-    artist: "",
-    cover_url: ""
-});
-
-// TEST: 音量
-const volumeState = ref(50);
-
-// TEST: 获取歌曲url ["/song/url?id=33894312", "song/url/v1?id=33894312&level=exhigh", "/song/url/v1?id=405998841,33894312&level=lossless"]
 
 // 点击播放条事件
 function clickBarEvent(event) {
@@ -149,18 +101,23 @@ function clickBarEvent(event) {
     // 计算歌曲进度
     playState.value.play_progress = (clickPosition / barWidth) * 100;
     // 计算歌曲时间并取整
-    let currentTime = Math.floor(playState.value.play_progress / 100 * audio.value.duration);
+    let currentTime = Math.floor(playState.value.play_progress / 100 * music.audio.duration);
     // console.log(`进度：${playState.value.play_progress}, 时间：${currentTime}`);
-    audio.value.currentTime = currentTime;
+    // audio.value.currentTime = currentTime;
+    music.audio.currentTime = currentTime;
 }
 
 // 播放事件
-async function playEvent(_event) {
-    playState.value.status = !playState.value.status;
-
-    playState.value.status ? audio.value.play() : audio.value.pause();
+function playEvent() {
+    music.playStatus = !music.playStatus;
+    if (music.playStatus) {
+        play();
+    } else {
+        pause();
+    }
 }
 
+// TODO: Transform according to `playList store`.
 // 上一首事件
 function upEvent(_event) {
     if (musicIndex.value.index == 0) {
@@ -176,6 +133,7 @@ function upEvent(_event) {
     playState.value.status = true;
 }
 
+// TODO: Transform according to `playList store`.
 // 下一首事件
 function downEvent(_event) {
     if (musicIndex.value.index >= musicIndex.value.max) {
@@ -194,13 +152,13 @@ function downEvent(_event) {
 // 更新当前音频播放时间
 function updateCurTime() {
     // 当前播放时间【分】
-    playState.value.cur_minutes = Math.floor(audio.value.currentTime / 60);
+    playState.value.cur_minutes = Math.floor(music.audio.currentTime / 60);
     // 当前播放时间【秒】
-    playState.value.cur_seconds = Math.floor(audio.value.currentTime - playState.value.cur_minutes * 60);
+    playState.value.cur_seconds = Math.floor(music.audio.currentTime - playState.value.cur_minutes * 60);
     // 音频总时长【分】
-    playState.value.dur_minutes = Math.floor(audio.value.duration / 60);
+    playState.value.dur_minutes = Math.floor(music.audio.duration / 60);
     // 音频总时长【秒】
-    playState.value.dur_seconds = Math.floor(audio.value.duration - playState.value.dur_minutes * 60);
+    playState.value.dur_seconds = Math.floor(music.audio.duration - playState.value.dur_minutes * 60);
 
     if (playState.value.cur_minutes < 10) {
         playState.value.cur_minutes = '0' + playState.value.cur_minutes;
@@ -229,127 +187,38 @@ function updateCurTime() {
     }
 
     // 计算播放进度
-    playState.value.play_progress = audio.value.currentTime / audio.value.duration * 100;
+    playState.value.play_progress = music.audio.currentTime / music.audio.duration * 100;
 
     // 播放完成恢复原样
     if (playState.value.play_progress == 100) {
         // 更改播放样式
         playState.value.play_progress = 0;
         playState.value.cur_time = "00:00";
-        playState.value.status = false;
+        music.playStatus = false;
     }
 }
 
-/*==================================== version 2 =====================================*/
-// TEST: 根据音乐ID获取歌曲详细信息
-async function getMusicDetail(id) {
-    let info = await invoke("get_music_detail", { id });
-    if (info.code === 200) {
-        return info.songs[0];
-    } else {
-        console.log(`请求音乐详情失败：${id}`);
-    }
-}
-
-// TEST： 获取列表所有音乐的详细信息
-async function getAllMusicDetail(ids) {
-    await ids.forEach(async (id) => {
-        let obj = await getMusicDetail(id);
-        musicInfos.value.push(obj);
-    });
-}
-
-// TEST: 设置默认播放音乐
-async function setDefaultMusic() {
-    setTimeout(async () => {
-        // 设置当前音乐对象
-        let _currMusicInfo = {
-            id: musicInfos.value[0].id,
-            name: musicInfos.value[0].name,
-            dt: musicInfos.value[0].dt,
-            picUrl: musicInfos.value[0].al.picUrl,
-            artists: musicInfos.value[0].ar,
-            url: "",
-        };
-        let musicUrlJson = await invoke("get_music_url", { id: _currMusicInfo.id });
-
-        if (musicUrlJson.code !== 200) {
-            console.log(`请求music url 失败! id: ${_currMusicInfo.id}`);
-        } else {
-            _currMusicInfo.url = musicUrlJson.data[0].url;
-        }
-        currMusicInfo.value = _currMusicInfo;
-        console.log(`当前音乐: ${currMusicInfo.value}`);
-        console.log(`当前音乐: ${JSON.stringify(currMusicInfo.value)}`);
-
-        audio.value = new Audio();  // 创建音频对象
-        audio.value.loop = false;   // 不循环播放
-        console.log(JSON.stringify(currMusicInfo.value));
-        // TODO
-        audio.value.src = currMusicInfo.value.url;
-        audio.value.addEventListener("timeupdate", updateCurTime);
-        musicDomInfo.value.name = currMusicInfo.value.name;
-        let artists_str = "";
-        currMusicInfo.value.artists.forEach((value) => {
-            artists_str += `${value.name},`
-        });
-        artists_str = artists_str.replace(/^(\s|,)+|(\s|,)+$/g, '');
-        musicDomInfo.value.artist = artists_str;
-        musicDomInfo.value.cover_url = currMusicInfo.value.picUrl;
-    }, 1000);
-
-    // TEST: 音量测试
-    // let v = 1;
-    // setInterval(() => {
-    //     if (v >= 0) {
-    //         audio.value.volume = v;
-    //         v -= 0.1;
-    //         console.log(`volume: ${v}`);
-    //     }
-    // }, 2000);
-}
-/*===================================================================================*/
-
+// 播放列表点击事件
 function goPlayList() {
     router.push({ name: "playList" });
 }
 
 // 在此初始化
 onBeforeMount(async () => {
-    // 音频播放位置改变事件 v1
-    // audio.value = new Audio();  // 创建音频对象
-    // audio.value.loop = false;   // 不循环播放
-    // audio.value.src = musicList.value[0].url;
-    // audio.value.addEventListener("timeupdate", updateCurTime);
-    // musicDomInfo.value.name = musicList.value[0].name;
-    // musicDomInfo.value.artist = musicList.value[0].artist;
-    // musicDomInfo.value.cover_url = musicList.value[0].cover_url;
-    // v1 
-
-    // v2
-    // 请求音乐详情
-    await getAllMusicDetail(musicIDS);
-    await setDefaultMusic();
-    // audio.value = new Audio();  // 创建音频对象
-    // audio.value.loop = false;   // 不循环播放
-    // console.log(JSON.stringify(currMusicInfo.value));
-    // audio.value.src = currMusicInfo.value.url;
-    // audio.value.addEventListener("timeupdate", updateCurTime);
-    // musicDomInfo.value.name = currMusicInfo.value.name;
-    // musicDomInfo.value.artist = "空";  // TODO： 歌手还没做
-    // musicDomInfo.value.cover_url = currMusicInfo.value.picUrl;
-    // v2
+    // music.info.id = 65533;
+    // await load();
+    music.audio.addEventListener("timeupdate", updateCurTime);
 });
 
 onMounted(() => {
     let volumeDom = document.getElementById("id-volume");
     volumeDom.addEventListener("mousewheel", (event => {
-        if (event.deltaY == -125 && volumeState.value < 100) {
-            volumeState.value += 5;
-        } else if(event.deltaY == 125 && volumeState.value > 0) {
-            volumeState.value -= 5;
+        if (event.deltaY == -125 && playState.value.volume < 100) {
+            playState.value.volume += 5;
+        } else if (event.deltaY == 125 && playState.value.volume > 0) {
+            playState.value.volume -= 5;
         }
-        audio.value.volume = volumeState.value / 100.0;
+        music.audio.volume = playState.value.volume / 100.0;
     }));
 });
 </script>
@@ -510,32 +379,39 @@ onMounted(() => {
         display: flex;
         justify-content: center;
         align-items: center;
+
         .volume-value {
             display: flex;
             justify-content: center;
             align-items: center;
             margin-right: 5px;
         }
+
         .volume {
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
+
             .icon {
                 width: 28px;
                 height: 28px;
             }
+
             margin-right: 10px;
         }
+
         .play-list {
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
+
             .icon {
                 width: 28px;
                 height: 28px;
             }
+
             margin-right: 10px;
         }
     }

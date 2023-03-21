@@ -24,6 +24,12 @@ const list = ref([
         flex-direction: column;
         padding: 10px;
         flex-grow: 1;
+        .bg-1 {
+            background-color: #000;
+        }
+        .bg-2 {
+            background-color: #000;
+        }
         .item {
             width: 100%;
         }

@@ -40,7 +40,7 @@
             </div>
         </div>
         <div class="tools">
-            <div class="volume-value">
+            <div class="volume-value" :class="[playState.volumeValueShow ? '' : 'volume-value-none']">
                 <p>{{ playState.volume }}%</p>
             </div>
             <div id="id-volume" class="volume" :title="'音量:' + playState.volume">
@@ -66,6 +66,7 @@ const { playlistState, previous, next } = usePlayListStore();
 
 // 播放栏状态
 const playState = ref({
+    volumeValueShow: false,  // 音量百分比显示
     volume: 50,         // 音量百分比
     c_minutes: 0,       // 点击播放位置【分】
     c_seconds: 0,       // 点击播放位置【秒】
@@ -178,23 +179,27 @@ async function updateCurTime() {
         music.playStatus = false;
 
         // 播放完成自动下一首
-        await autoNextMusic();
-    }
-}
-
-// 自动下一首
-async function autoNextMusic() {
-    if (playlistState.idx < len) {
-        playlistState.idx++;
-        music.info.id = playlistState.list[playlistState.idx];
-        await load();
-        play();
+        await next();
     }
 }
 
 // 播放列表点击事件
 function goPlayList() {
     router.push({ name: "playList" });
+}
+
+// 滚轮调节音量
+function changeVolumeEvent(event) {
+    playState.value.volumeValueShow = true;
+    if (event.deltaY == -125 && playState.value.volume < 100) {
+        playState.value.volume += 5;
+    } else if (event.deltaY == 125 && playState.value.volume > 0) {
+        playState.value.volume -= 5;
+    }
+    music.audio.volume = playState.value.volume / 100.0;
+    setTimeout(() => {
+        playState.value.volumeValueShow = false;
+    }, 1000);
 }
 
 // 在此初始化
@@ -209,14 +214,7 @@ onBeforeMount(() => {
 
 onMounted(() => {
     let volumeDom = document.getElementById("id-volume");
-    volumeDom.addEventListener("mousewheel", (event => {
-        if (event.deltaY == -125 && playState.value.volume < 100) {
-            playState.value.volume += 5;
-        } else if (event.deltaY == 125 && playState.value.volume > 0) {
-            playState.value.volume -= 5;
-        }
-        music.audio.volume = playState.value.volume / 100.0;
-    }));
+    volumeDom.addEventListener("mousewheel", changeVolumeEvent);
 });
 </script>
 
@@ -382,6 +380,11 @@ onMounted(() => {
             justify-content: center;
             align-items: center;
             margin-right: 5px;
+        }
+
+        .volume-value-none {
+            opacity: 0;
+            transition: ease 0.8s;
         }
 
         .volume {

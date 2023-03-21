@@ -3,8 +3,8 @@
         <div class="cover">
             <div class="cover-img"><img :src="music.info.picUrl"></div>
             <div class="music-info">
-                <div class="music-name"><a href="">{{ music.info.name }}</a></div>
-                <div class="music-artist"><a href="#">{{ music.info.artists }}</a></div>
+                <div class="music-name"><a href="javascript:;">{{ music.info.name }}</a></div>
+                <div class="music-artist"><a href="javascript:;">{{ music.info.artists }}</a></div>
             </div>
             <div class="fav-btn">
                 <a href="#">
@@ -58,11 +58,11 @@ import { onBeforeMount, onMounted, ref, watch } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useRouter } from "vue-router";
 import { useMusicStore } from "../stores/music.js";
+import { usePlayListStore } from "../stores/playList";
 
 const router = useRouter();
 const { music, load, play, pause } = useMusicStore();
-
-// 65533, 65528, 1974443814, 65533, 65536, 28563317, 65538
+const { playlistState, previous, next } = usePlayListStore();
 
 // 播放栏状态
 const playState = ref({
@@ -97,7 +97,6 @@ function clickBarEvent(event) {
     // 计算鼠标在进度条上的点击位置（当前鼠标的X坐标 - 进度条在窗口中的left位置）
     let clickPosition = mouseX - barL;
     // console.log(`总宽度：${barWidth}，鼠标坐标：${mouseX},点击位置：${clickPosition}`);
-
     // 计算歌曲进度
     playState.value.play_progress = (clickPosition / barWidth) * 100;
     // 计算歌曲时间并取整
@@ -119,38 +118,20 @@ function playEvent() {
 
 // TODO: Transform according to `playList store`.
 // 上一首事件
-function upEvent(_event) {
-    if (musicIndex.value.index == 0) {
-        return;
-    }
-    musicIndex.value.index--;
-    audio.value.pause();
-    audio.value.src = musicList.value[musicIndex.value.index].url;
-    musicDomInfo.value.name = musicList.value[musicIndex.value.index].name;
-    musicDomInfo.value.artist = musicList.value[musicIndex.value.index].artist;
-    musicDomInfo.value.cover_url = musicList.value[musicIndex.value.index].cover_url;
-    audio.value.play();
-    playState.value.status = true;
+async function upEvent() {
+    console.log("上一首");
+    previous();
 }
 
 // TODO: Transform according to `playList store`.
 // 下一首事件
-function downEvent(_event) {
-    if (musicIndex.value.index >= musicIndex.value.max) {
-        return;
-    }
-    musicIndex.value.index++;
-    audio.value.pause();
-    audio.value.src = musicList.value[musicIndex.value.index].url;
-    musicDomInfo.value.name = musicList.value[musicIndex.value.index].name;
-    musicDomInfo.value.artist = musicList.value[musicIndex.value.index].artist;
-    musicDomInfo.value.cover_url = musicList.value[musicIndex.value.index].cover_url;
-    audio.value.play();
-    playState.value.status = true;
+async function downEvent() {
+    console.log("下一首");
+    next();
 }
 
 // 更新当前音频播放时间
-function updateCurTime() {
+async function updateCurTime() {
     // 当前播放时间【分】
     playState.value.cur_minutes = Math.floor(music.audio.currentTime / 60);
     // 当前播放时间【秒】
@@ -195,6 +176,19 @@ function updateCurTime() {
         playState.value.play_progress = 0;
         playState.value.cur_time = "00:00";
         music.playStatus = false;
+
+        // 播放完成自动下一首
+        await autoNextMusic();
+    }
+}
+
+// 自动下一首
+async function autoNextMusic() {
+    if (playlistState.idx < len) {
+        playlistState.idx++;
+        music.info.id = playlistState.list[playlistState.idx];
+        await load();
+        play();
     }
 }
 
@@ -204,10 +198,13 @@ function goPlayList() {
 }
 
 // 在此初始化
-onBeforeMount(async () => {
-    // music.info.id = 65533;
-    // await load();
-    music.audio.addEventListener("timeupdate", updateCurTime);
+onBeforeMount(() => {
+    let interval = setInterval(() => {
+        if (music.audio !== null) {
+            music.audio.addEventListener("timeupdate", updateCurTime);
+            clearInterval(interval);
+        }
+    }, 100);
 });
 
 onMounted(() => {

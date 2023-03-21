@@ -9,10 +9,10 @@
 				<a href="#">前进</a>
 				<a href="#">用户名</a>
 			</nav>
-			<RouterView class="box"/>
+			<RouterView class="box" />
 		</div>
 		<div class="player">
-			<Player/>
+			<Player />
 		</div>
 	</div>
 </template>
@@ -23,29 +23,42 @@ import "./assets/css/base.css";
 import Menus from "./components/Menus.vue";
 import Player from "./components/Player.vue";
 import { useMusicStore } from "./stores/music";
+import { emit, listen } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api";
+import { usePlayListStore } from "./stores/playList";
 
 const { music, load, play, pause } = useMusicStore();
+const { playlistState, previous, next } = usePlayListStore();
 
 let ids = [28731108, 34274470, 65533, 65528, 1974443814, 65536, 28563317, 65538];
 
 onBeforeMount(async () => {
-	let idx = 0;
-	music.info.id = ids[idx];
-	await load();
-	// play();
-	// console.log(`playing ${idx}`);
+	// check service
+	let state = await invoke("chekc_server");
+	console.log(state);
+	if (state.code != 200) {
+		console.log("Service is not ok!");
+	}
 
-	// setInterval(async () => {
-	// 	if (idx < ids.length) {
-	// 		idx++;
-	// 	} else {
-	// 		idx = 0;
-	// 	}
-	// 	music.info.id = ids[idx];
-	// 	await load();
-	// 	play();
-	// 	console.log(`playing ${idx}`);
-	// }, 20000);
+	ids.forEach((value) => {
+		playlistState.list.push(value);
+	});
+	music.info.id = playlistState.list[playlistState.idx];
+	await load();
+
+	await listen("event-previous", (event) => {
+		console.log("上一首");
+		console.log(event.event);
+		console.log(event.payload);
+		previous();
+	});
+
+	await listen("event-next", (event) => {
+		console.log("下一首");
+		console.log(event.event);
+		console.log(event.payload);
+		next();
+	});
 });
 </script>
 

@@ -5,7 +5,10 @@ import { PiniaVuePlugin } from "pinia";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
-
+  test: {
+    // globals: true,
+    environment: "jsdom"
+  },
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors
   clearScreen: false,

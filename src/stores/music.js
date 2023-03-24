@@ -1,7 +1,5 @@
 import { defineStore } from "pinia";
-import { invoke } from "@tauri-apps/api";
 import { ref } from "vue";
-import { reqMusicSource } from "../tools/req";
 
 export const useMusicStore = defineStore("music", () => {
     const music = ref({
@@ -22,30 +20,28 @@ export const useMusicStore = defineStore("music", () => {
         music.value.audio.preload = "meta";
     }
 
-    async function initMusicSource() {
-        let id = music.value.info.id;
-        let mso = await reqMusicSource(id);
-        music.value.info.name = mso.name;
-        music.value.info.dt = mso.dt;
-        music.value.info.picUrl = mso.picUrl;
-        music.value.info.artists = mso.artists;
-        music.value.info.url = mso.url;
-    }
+    // Load music source from play list.
+    async function loadSource(obj) {
+        let { id, name, artists, picUrl, url } = obj;
+        music.value.info = {
+            id,
+            name,
+            artists,
+            picUrl,
+            url,
+        };
+    }       
 
-    // 加载
-    async function load() {
+    // Load.
+    async function load(obj) {
         if (music.value.audio === null) {
-            console.log("init audio");
             initAudio();
         }
         if (music.value.info.url !== "") {
             pause();
-        } 
-        console.log('init music source');
-        await initMusicSource();
-        console.log("prepare play music");
+        }
+        await loadSource(obj);
         music.value.audio.src = music.value.info.url;
-        console.log(music.value.info.url);
     }
 
     // 播放暂替

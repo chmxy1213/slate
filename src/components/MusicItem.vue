@@ -15,24 +15,47 @@
             </div>
         </div>
         <div class="album">
-            <p>{{ info.album }}</p>
+            <p>{{ info.album.name }}</p>
         </div>
         <div class="time">
-            <p>{{ info.time }}</p>
+            <p>{{ time.str }}</p>
         </div>
     </div>
 </template>
 
 <script setup>
-import { onBeforeMount } from "vue";
+import { ref, onBeforeMount } from "vue";
 
-defineProps({
+const time = ref({
+    minute: 0,
+    second: 0,
+    str: "",
+});
+
+const props = defineProps({
     id: Number,
     info: Object,
 });
 
 onBeforeMount(() => {
+    let dt_s = Math.floor(props.info.dt / 1000.0);
+    
+    time.value.minute = Math.floor(dt_s / 60);
+    time.value.second = Math.floor(dt_s - time.value.minute * 60);
 
+    let minute_str = "";
+    let second_str = "";
+    if (time.value.minute < 10) {
+        minute_str = '0' + time.value.minute;
+    } else {
+        minute_str = '' + time.value.minute;
+    }
+    if (time.value.second < 10) {
+        second_str = time.value.second = '0' + time.value.second;
+    } else {
+        second_str = '' + time.value.second;
+    }
+    time.value.str = minute_str + ':' + second_str;
 });
 </script>
 

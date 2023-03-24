@@ -117,18 +117,14 @@ function playEvent() {
     }
 }
 
-// TODO: Transform according to `playList store`.
 // 上一首事件
 async function upEvent() {
-    console.log("上一首");
-    previous();
+    await previous();
 }
 
-// TODO: Transform according to `playList store`.
 // 下一首事件
 async function downEvent() {
-    console.log("下一首");
-    next();
+    await next();
 }
 
 // 更新当前音频播放时间

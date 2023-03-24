@@ -1,7 +1,7 @@
 <template>
     <div class="box">
-        <div class="item" v-for="item in list">
-            <MusicItem :id="item.id" :info="item"/>
+        <div class="item" v-for="(item, index) of store.list">
+            <MusicItem :id="index + 1" :info="item" @dblclick="dblclick(item)"/>
         </div>
     </div>
 </template>
@@ -9,12 +9,18 @@
 <script setup>
 import { ref } from "vue";
 import MusicItem from "../components/MusicItem.vue";
+import { usePlayListStore } from "../stores/playList";
+import { useMusicStore } from "../stores/music";
 
-const list = ref([
-    { id: 1, picUrl: "cover/我的名字.jpg", name: "a", artists: "artists", album: "album", time: "3:45" },
-    { id: 2, picUrl: "cover/我的名字.jpg", name: "b", artists: "artists", album: "album", time: "3:45" },
-    { id: 3, picUrl: "cover/我的名字.jpg", name: "c", artists: "artists", album: "album", time: "3:45" },
-])
+const { load, play } = useMusicStore();
+const { playlistState: store } = usePlayListStore();
+
+// Click item play music event.
+async function dblclick(obj) {
+    console.log(`double click: ${obj}`);
+    await load(obj);
+    play();
+}
 </script>
 
 <style scoped lang="less">

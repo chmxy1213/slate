@@ -1,20 +1,23 @@
 // 数据请求类的工具
 import { invoke } from "@tauri-apps/api";
 
-
-async function reqMusicSource(id) {
-    console.log(`music id: ${id}`);
+// Request music details.
+async function reqMusicDetail(id) {
     // Check whether the `id` is valid.
     if (id === 0) {
         return;
     }
     // Music source object
     let mso = {
+        id,
         name: "",
         artists: "",
         picUrl: "",
         dt: "",
-        url: "",
+        album: {
+            id: 0,
+            name: "",
+        },
     };
 
     // Music detail response.
@@ -28,6 +31,8 @@ async function reqMusicSource(id) {
     mso.name = mds.songs[0].name;
     mso.picUrl = mds.songs[0].al.picUrl;
     mso.dt = mds.songs[0].dt;
+    mso.album.id = mds.songs[0].al.id;
+    mso.album.name = mds.songs[0].al.name;
     
     // Processing an artist list convents it to an artist string.
     let _as = "";  // Artist String
@@ -38,18 +43,22 @@ async function reqMusicSource(id) {
     _as = _as.replace(/^(\s|,)+|(\s|,)+$/g, '');
     mso.artists = _as;
 
-    // Request the music source url.
-    // Response of music source url
-    let rmsu = await invoke("get_music_url", { id });
-    // Check whether the code equals 200.
-    if (rmsu.code !== 200) {
-        console.log(`Request themusic source url error of id is ${id}`);
-        return;
-    }
-    mso.url = rmsu.data[0].url;
-
     return mso;
 }
 
+// Request the music source url.
+async function reqMusicSource(id) {
+    // Check whether the `id` is valid.
+    if (id === undefined || id === null || id === 0) {
+        return;
+    }
+    let res = await invoke("get_music_url", { id });
+    if (res.code !== 200) {
+        console.log(`Request themusic source url error of id is ${id}`);
+        return;
+    }
+    return { url: res.data[0].url };
+}
 
-export { reqMusicSource };
+
+export { reqMusicDetail, reqMusicSource };

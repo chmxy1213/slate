@@ -85,7 +85,8 @@ onBeforeMount(() => {
             display: flex;
             align-items: center;
             margin: 2px;
-
+            width: 32px;
+            height: 32px;
             .index-icon {
                 display: none;
             }
@@ -142,9 +143,15 @@ onBeforeMount(() => {
     background-color: #2a2a2a;
     cursor: pointer;
     opacity: 1;
-}
-
-.container-music-item:hover .collec .index .id {
-        display: none !important;
+    .collect {
+        .index {
+            .id {
+                display: none !important;
+            }
+            .index-icon {
+                display: inline !important;
+            }
+        }
+    }
 }
 </style>

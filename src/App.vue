@@ -44,9 +44,9 @@ onBeforeMount(async () => {
 		await add(id);
 	});
 
-	setTimeout(async () => {
-		await load(playlistState.list[playlistState.idx]);
-	}, 1000);
+	// setTimeout(async () => {
+	// 	await load(playlistState.list[playlistState.idx]);
+	// }, 1000);
 
 	await listen("event-previous", (event) => {
 		console.log("上一首");

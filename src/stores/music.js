@@ -30,7 +30,7 @@ export const useMusicStore = defineStore("music", () => {
             picUrl,
             url,
         };
-    }       
+    }
 
     // Load.
     async function load(obj) {
@@ -41,7 +41,21 @@ export const useMusicStore = defineStore("music", () => {
             pause();
         }
         await loadSource(obj);
-        music.value.audio.src = music.value.info.url;
+        console.log(obj);
+        if (music.value.info.url === "") {
+            console.log("Error loading music, url: is null");
+            // try again
+            let i = 0;
+            let tryAgiainInterval = setInterval(() => {
+                if (music.value.info.url !== "" || i >= 10) {
+                    music.value.audio.src = music.value.info.url;
+                    clearInterval(tryAgiainInterval);
+                }
+                i++;
+            }, 100);
+        } else {
+            music.value.audio.src = music.value.info.url;
+        }
     }
 
     // 播放暂替

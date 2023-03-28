@@ -1,11 +1,31 @@
 <template>
     <div class="home-msg">
-        <Card>
-            <p>Card1</p>
-        </Card>
-        <Card>
-            <p>Card2</p>
-        </Card>
+        <div>
+            <Card>
+                <p>每日推荐</p>
+            </Card>
+            <Card>
+                <p>飙升榜</p>
+            </Card>
+            <Card>
+                <p>新歌榜</p>
+            </Card>
+        </div>
+        <div>
+            <Card>
+                <p>原创榜</p>
+            </Card>
+            <Card>
+                <p>热歌榜</p>
+            </Card>
+            <Card>
+                <p>新歌速递</p>
+            </Card>
+            <Card>
+                <p>推荐歌单</p>
+            </Card>
+        </div>
+
     </div>
 </template>
 
@@ -19,7 +39,9 @@ const testData = {}
 .home-msg {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    flex-direction: column;
+    flex-wrap: wrap;
     width: 100%;
     height: 100%;
 }

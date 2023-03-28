@@ -42,7 +42,8 @@ fn main() {
             greet,
             get_music_detail,
             get_music_url,
-            chekc_server,
+            check_server,
+            check,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

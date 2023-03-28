@@ -1,17 +1,15 @@
+use reqwest::header;
+
+use crate::models::check_res::CheckRes;
 use crate::models::music::MusicJSON;
 use crate::models::music_url::MusicUrlJson;
 use crate::models::service::ServiceState;
 use crate::*;
 
 #[tauri::command]
-pub async fn chekc_server() -> Result<ServiceState, String> {
+pub async fn check_server() -> Result<ServiceState, String> {
     let url = "http://localhost:3000";
-    let resp = reqwest::get(url)
-        .await
-        .unwrap()
-        .text()
-        .await
-        .unwrap();
+    let resp = reqwest::get(url).await.unwrap().text().await.unwrap();
     let mut ss = ServiceState {
         code: 0,
         msg: "Service is not ok!".into(),
@@ -56,6 +54,36 @@ pub async fn get_music_url(id: u64) -> MusicUrlJson {
     resp
 }
 
+#[tauri::command]
+pub async fn check(token: String) -> Result<CheckRes, String> {
+    let url = "http://localhost:8000/check";
+
+    let mut headers = header::HeaderMap::new();
+    let mut auth_value = header::HeaderValue::from_bytes(token.as_bytes()).unwrap();
+    auth_value.set_sensitive(true);
+    headers.insert(header::AUTHORIZATION, auth_value);
+
+    let client = reqwest::Client::builder()
+        .default_headers(headers)
+        .build()
+        .unwrap();
+    let res = client
+        .get(url)
+        .send()
+        .await
+        .unwrap()
+        .json::<CheckRes>()
+        .await;
+    match res {
+        Ok(r) => Ok(r),
+        Err(e) => Ok(CheckRes {
+            code: 401,
+            msg: e.to_string(),
+            data: None,
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -84,7 +112,7 @@ mod tests {
 
     #[test]
     fn test_chekc_server() {
-        let s = aw!(chekc_server());
+        let s = aw!(check_server());
         println!("{:?}", s);
     }
 }

@@ -1,8 +1,10 @@
 use reqwest::header;
 
 use crate::models::check_res::CheckRes;
+use crate::models::login::{LoginReq, LoginRes};
 use crate::models::music::MusicJSON;
 use crate::models::music_url::MusicUrlJson;
+use crate::models::register::{RegisterReq, RegisterRes};
 use crate::models::service::ServiceState;
 use crate::*;
 
@@ -80,8 +82,72 @@ pub async fn check(token: String) -> Result<CheckRes, String> {
             code: 401,
             msg: e.to_string(),
             data: None,
-        })
+        }),
     }
+}
+
+// login
+#[tauri::command]
+pub async fn login(req_data: LoginReq, t: String) -> Result<LoginRes, ()> {
+    let url = format!("http://localhost:8000/login?t={}", t);
+    
+    let json_value: serde_json::Value;
+    if t == "nickname" {
+        json_value =  serde_json::json!({
+            "nickname": req_data.username,
+            "password": req_data.password,
+        });
+    } else if t == "email" {
+        json_value =  serde_json::json!({
+            "email": req_data.username,
+            "password": req_data.password,
+        });
+    } else {
+        return Ok(LoginRes {
+            code: 400,
+            msg: "query `t` error".into(),
+            data: None,
+        });
+    }
+
+    // use reqwest lib send post request and parse response data to string
+    let res = reqwest::Client::new()
+        .post(url)
+        .json(&json_value)
+        .send()
+        .await
+        .unwrap()
+        .text()
+        .await
+        .unwrap();
+    println!("res: {}", res);
+    let res = serde_json::from_str::<LoginRes>(&res).unwrap();
+    Ok(res)
+}
+
+// register: the function is same and `login` function
+#[tauri::command]
+pub async fn register(req_data: RegisterReq) -> Result<RegisterRes, ()> {
+    let url = "http://localhost:8000/register";
+    let res = reqwest::Client::new()
+        .post(url)
+        .json(&req_data)
+        .send()
+        .await
+        .unwrap()
+        .text()
+        .await
+        .unwrap();
+    println!("res: {}", res);
+    let res = serde_json::from_str::<RegisterRes>(&res).unwrap();
+    Ok(res)
+}
+
+/// Get the music list
+#[allow(dead_code)]
+#[tauri::command]
+pub async fn get_music_list() -> Result<Vec<String>, String> {
+    todo!("get music list")
 }
 
 #[cfg(test)]
@@ -114,5 +180,26 @@ mod tests {
     fn test_chekc_server() {
         let s = aw!(check_server());
         println!("{:?}", s);
+    }
+
+    #[test]
+    fn test_login() {
+        let req_data = LoginReq{
+            username: "Dave".into(),
+            password: "password".into(),
+        };
+        let res = aw!(login(req_data, "nickname".into())).unwrap();
+        println!("{:?}", serde_json::to_string(&res).unwrap());
+    }
+
+    #[test]
+    fn test_register() {
+        let req_data = RegisterReq{
+            nickname: "Dave2".into(),
+            password: "password".into(),
+            email: "Dave2@emai.com".into(),
+        };
+        let res = aw!(register(req_data)).unwrap();
+        println!("{:?}", serde_json::to_string(&res).unwrap());
     }
 }

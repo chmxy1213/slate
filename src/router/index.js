@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { createRouter, createWebHistory } from "vue-router";
+import { useUserStore } from "../stores/user.js";
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,18 +8,19 @@ const router = createRouter({
 		// register and login
 		// TODO
 		{
-			path: "/",
+			path: "/login",
 			name: "login",
 			component: () => import("../view/Login.vue"),
 		},
 		// TODO
 		{
-			path: "/main",
+			path: "/",
 			name: "main",
 			component: () => import("../view/Main.vue"),
 			children: [
 				{
 					path: "home",
+					name: "home",
 					component: () => import("../view/Home.vue"),
 				},
 				{
@@ -41,6 +43,7 @@ const router = createRouter({
 	]
 });
 
+
 // Global router guard.
 router.beforeEach(async (to, from) => {
 	// ...
@@ -54,6 +57,22 @@ router.beforeEach(async (to, from) => {
 	// 		router.push({ name: "login" })
 	// 	}
 	// }
+	
+	// TODO
+	const { user } = useUserStore();
+	console.log(user);
+	if (to.name == "main") {
+		if (user.token === "") {
+			router.push({ name: "login" })
+		}
+		let res = await invoke("check", { token: user.token });
+		console.log(res);
+		if (res.code !== 200) {
+			router.push({ name: "login" })
+		}
+		user.id = res.data.id;
+		user.nickname = res.data.name;
+	}
 });
 
 export default router;

@@ -4,7 +4,6 @@
             <ul>
                 <li class="list" :class="{ 'active': navFocus[0] }" @click="navClick(0)">
                     <span class="icon">
-                        <!-- <img src="../assets/icon/home.svg"> -->
                         <img src="/svg/home.svg">
                     </span>
                     <span class="text">主页</span>

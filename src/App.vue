@@ -3,10 +3,5 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-
-// const router = useRouter();
-// router.push({name: "login"});
+import "./assets/css/base.css";
 </script>
-
-<style scoped lang="less"></style>

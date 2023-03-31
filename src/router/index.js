@@ -46,32 +46,25 @@ const router = createRouter({
 
 // Global router guard.
 router.beforeEach(async (to, from) => {
-	// ...
 	// 返回 false 以取消导航
-	// return false
-	// if (to.name !== "login") {
-	// 	let token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODAxNDk1NDUsImlkIjoxLCJuaWNrbmFtZSI6IkRhdmUifQ.QI3Tmf_-5YIyaeP6-6rm_20yWV7etvuASkg591GFUFo	";
-	// 	let res = await invoke("check", { token });
-	// 	console.log(res);
-	// 	if (res.code !== 200) {
-	// 		router.push({ name: "login" })
-	// 	}
-	// }
+
+	const { user, save, load } = useUserStore();
 	
-	// TODO
-	const { user } = useUserStore();
-	console.log(user);
-	if (to.name == "main") {
+	if (!user.token) {
+		load();
+	}
+	if (to.name === "main" && (from.name !== "main" && from.name !== undefined)) {
 		if (user.token === "") {
 			router.push({ name: "login" })
 		}
 		let res = await invoke("check", { token: user.token });
-		console.log(res);
 		if (res.code !== 200) {
 			router.push({ name: "login" })
 		}
 		user.id = res.data.id;
 		user.nickname = res.data.name;
+		save();
+		return true;
 	}
 });
 

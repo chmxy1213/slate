@@ -73,13 +73,13 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { onBeforeMount, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { invoke } from "@tauri-apps/api";
 import { message } from "@tauri-apps/api/dialog";
 import { useUserStore } from "../stores/user";
 
-const { user } = useUserStore();
+const { user, save } = useUserStore();
 const router = useRouter();
 
 const loginForm = ref({
@@ -117,6 +117,7 @@ async function loginEvent() {
     }
 
     user.token = "Bearer " + res.data.token;
+    save();
     router.push({ name: "main" });
 }
 
@@ -157,6 +158,7 @@ async function registerEvent() {
     user.token = "Bearer " + res.data.token;
     user.email = registerForm.value.email;
     user.name = registerForm.value.nickName;
+    save();
 }
 
 watch(selectState, (val) => {
@@ -175,6 +177,15 @@ watch(selectState, (val) => {
         document.querySelector(".login").style.display = "none";
         document.querySelector(".register").style.display = "flex";
     }
+});
+
+onBeforeMount(async () => {
+    if (user.token) {
+        let res = await invoke("check", {
+            token: user.token
+        });
+    }
+
 });
 </script>
 

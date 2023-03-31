@@ -65,7 +65,7 @@ onBeforeMount(async () => {
 .container {
 	display: grid;
 	grid-template-columns: repeat(9, 1fr);
-	grid-template-rows: repeat(19, 1fr);
+	grid-template-rows: repeat(39, 1fr);
 	background-color: #00000000;
 	width: 100%;
 	height: 100%;
@@ -75,7 +75,7 @@ onBeforeMount(async () => {
 		grid-column-start: 1;
 		grid-column-end: 2;
 		grid-row-start: 1;
-		grid-row-end: 18;
+		grid-row-end: 35;
 		// background-color: #000000;
 		background-color: #22212c;
 		border-right: 1px solid #282828;
@@ -85,7 +85,7 @@ onBeforeMount(async () => {
 		grid-column-start: 2;
 		grid-column-end: 10;
 		grid-row-start: 1;
-		grid-row-end: 18;
+		grid-row-end: 35;
 		// background-color: #121212;
 		background-color: #151320;
 		overflow: auto;
@@ -101,8 +101,8 @@ onBeforeMount(async () => {
 	.player {
 		grid-column-start: 1;
 		grid-column-end: 10;
-		grid-row-start: 18;
-		grid-row-end: 20;
+		grid-row-start: 35;
+		grid-row-end: 40;
 		background-color: #181818;
 		border-top: 1px solid #282828;
 		// display: flex;

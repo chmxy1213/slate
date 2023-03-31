@@ -4,11 +4,7 @@
 			<Menus />
 		</div>
 		<div class="body">
-			<nav class="nav">
-				<a href="#">后退</a>
-				<a href="#">前进</a>
-				<a href="#">用户名</a>
-			</nav>
+			<Nav />
 			<RouterView class="box" />
 		</div>
 		<div class="player">
@@ -21,7 +17,7 @@
 import { onBeforeMount, onMounted } from "vue";
 import { emit, listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api";
-
+import Nav from "../components/Nav.vue";
 import "../assets/css/base.css";
 import Menus from "../components/Menus.vue";
 import Player from "../components/Player.vue";
@@ -95,17 +91,6 @@ onBeforeMount(async () => {
 		overflow: auto;
 		display: flex;
 		flex-direction: column;
-
-		.nav {
-			display: flex;
-			flex-grow: 0;
-			// height: 100px;
-			margin-top: 10px;
-
-			a {
-				margin-left: 20px;
-			}
-		}
 
 		.body {
 			display: flex;

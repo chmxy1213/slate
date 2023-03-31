@@ -30,9 +30,29 @@
 </template>
 
 <script setup>
+import { onBeforeMount, ref } from 'vue';
+import { invoke } from "@tauri-apps/api";
 import Card from '../components/Card.vue';
 console.log('主页 log'); // TEST
-const testData = {}
+
+const hotMusic = [
+    { id: 19723756, name: "飙升榜" },
+    { id: 3779629, name: "新歌榜" },
+    { id: 2884035, name: "原创榜" },
+    { id: 3778678, name: "热歌榜" },
+    { id: 3778678, name: "新歌速递" },
+    { id: 3778678, name: "推荐歌单" },
+];
+const carList = ref([
+    { id: 0, name: "", description: "", coverImgUrl: "" },
+]);
+
+onBeforeMount(async () => {
+    let res1 = await invoke("get_playlist_detail", { id: 19723756 });
+    let res2 = await invoke("get_hot_music_list", { id: 19723756, limit: 10, offset: 0 });
+    console.log(res1);
+    console.log(res2);
+});
 </script>
 
 <style scoped lang="less">

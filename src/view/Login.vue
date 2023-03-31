@@ -98,16 +98,12 @@ const registerForm = ref({
 const selectState = ref(0);
 
 function selectEvent(code) {
-    console.log("selecting...", code);
     selectState.value = code;
 }
 
 // TODO
 // login function
 async function loginEvent() {
-    console.log("login...");
-    console.log(loginForm.value);
-
     let res = await invoke("login", {
         reqData: {
             username: loginForm.value.username,
@@ -115,9 +111,8 @@ async function loginEvent() {
         },
         t: "nickname"
     });
-    console.log(res);
     if (res.code !== 200) {
-        console.log("登录失败");
+        await message("登录失败", { title: "Login", type: "error" });
         return;
     }
 
@@ -125,11 +120,8 @@ async function loginEvent() {
     router.push({ name: "main" });
 }
 
-// TODO
 // register function
 async function registerEvent() {
-    console.log("register...");
-    console.log(registerForm.value);
     // Check form itme whether it is empty
     if (registerForm.value.nickName === "" || 
             registerForm.value.email === "" || 
@@ -157,7 +149,6 @@ async function registerEvent() {
             password: registerForm.value.password,
         }
     });
-    console.log(res);
     if (res.code !== 201) {
         await message("注册失败", { title: "Register", type: "error" });
         return;
@@ -169,7 +160,6 @@ async function registerEvent() {
 }
 
 watch(selectState, (val) => {
-    console.log("watching...");
     if (val === 0) {
         // 移动指标
         document.querySelector(".select").style.top = "30" + "%";;

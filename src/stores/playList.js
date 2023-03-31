@@ -31,7 +31,6 @@ export const usePlayListStore = defineStore("playList", () => {
             id,
             ...res
         };
-        console.log(obj);
         playlistState.value.list.push(obj);
     }
 

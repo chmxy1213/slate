@@ -25,7 +25,7 @@ const visual = ref(false);
     border-radius: 10px;
     transition: .5s;
     padding: 20px;
-    margin: 20px;
+    // margin: 20px;
     // width: 200px;
     height: 100px;
     max-width: 30%;

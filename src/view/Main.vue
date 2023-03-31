@@ -73,7 +73,7 @@ onBeforeMount(async () => {
 	background-color: #00000000;
 	width: 100%;
 	height: 100%;
-	overflow: auto;
+	overflow: hidden;
 
 	.menus {
 		grid-column-start: 1;

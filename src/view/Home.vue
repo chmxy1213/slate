@@ -1,27 +1,25 @@
 <template>
     <div class="home-msg">
-        <div>
-            <Card>
+        <div class="test">
+            <Card class="test-2">
                 <p>每日推荐</p>
             </Card>
-            <Card>
+            <Card class="test-2">
                 <p>飙升榜</p>
             </Card>
-            <Card>
+            <Card class="test-2">
                 <p>新歌榜</p>
             </Card>
-        </div>
-        <div>
-            <Card>
+            <Card class="test-2">
                 <p>原创榜</p>
             </Card>
-            <Card>
+            <Card class="test-2">
                 <p>热歌榜</p>
             </Card>
-            <Card>
+            <Card class="test-2">
                 <p>新歌速递</p>
             </Card>
-            <Card>
+            <Card class="test-2">
                 <p>推荐歌单</p>
             </Card>
         </div>
@@ -61,8 +59,22 @@ onBeforeMount(async () => {
     justify-content: center;
     align-items: flex-start;
     flex-direction: column;
-    flex-wrap: wrap;
+    // flex-wrap: wrap;
     width: 100%;
     height: 100%;
+    
+    .test {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        
+        .test-2 {
+            display: flex;
+            flex-grow: 0;
+            width: 150px;
+            height: 150px;
+            margin: 10px;
+        }
+    }
 }
 </style>

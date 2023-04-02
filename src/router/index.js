@@ -36,7 +36,7 @@ const router = createRouter({
 				{
 					path: "playlist",
 					name: "playList",
-					component: () => import("../view/PlayList.vue")
+					component: () => import("../view/PlayQueue.vue")
 				},
 			]
 		},

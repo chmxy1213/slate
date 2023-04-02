@@ -46,7 +46,7 @@
             <div id="id-volume" class="volume" :title="'音量:' + playState.volume">
                 <img class="icon" src="/svg/volume.svg" alt="音量调节">
             </div>
-            <div class="play-list" title="播放列表" @click="goPlayList">
+            <div class="play-list" title="播放列表" @click="goPlayQueue">
                 <img class="icon" src="/svg/list-icon.svg" alt="播放列表">
             </div>
         </div>
@@ -180,7 +180,7 @@ async function updateCurTime() {
 }
 
 // 播放列表点击事件
-function goPlayList() {
+function goPlayQueue() {
     router.push({ name: "playList" });
 }
 

@@ -20,13 +20,6 @@ const router = createRouter({
 					path: "home",
 					name: "home",
 					component: () => import("../view/Home.vue"),
-					children: [
-						{
-							path: "playlist",
-							name: "playlist",
-							component: () => import("../view/Playlist.vue"),
-						},
-					]
 				},
 				{
 					path: "search",
@@ -39,9 +32,16 @@ const router = createRouter({
 					component: () => import("../view/Like.vue"),
 				},
 				{
+					// 播放列表
 					path: "playqueue",
 					name: "playQueue",
 					component: () => import("../view/PlayQueue.vue")
+				},
+				{
+					// 榜单列表详情
+					path: "playlist",
+					name: "playlist",
+					component: () => import("../view/Playlist.vue"),
 				},
 			]
 		},

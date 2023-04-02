@@ -1,5 +1,5 @@
 <template>
-    <div class="card" @mouseover="visual = true" @mouseout="visual = false">
+    <div class="card" @mouseover="visual = true" @mouseout="visual = false" @click="skip">
         <div class="info">
             <div class="cover">
                 <img :src="coverImgUrl">
@@ -8,7 +8,8 @@
                 <p>{{ name }}</p>
             </div>
             <div class="description">
-                <p>{{ description }}</p>
+                <p v-if="description.length > 20">{{ description.slice(0, 20) + '...' }}</p>
+                <p v-else>{{ description }}</p>
             </div>
         </div>
         <div title="播放" class="play-btn" :class="{ 'play-btn-visible': visual }"
@@ -19,7 +20,12 @@
 </template>
 
 <script setup>
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useTopListStore } from "../stores/topList";
+
+const router = useRouter();
+const { topLists } = useTopListStore();
 
 const props = defineProps({
     id: { type: Number, required: true },
@@ -30,12 +36,17 @@ const props = defineProps({
 
 const visual = ref(false);
 
+// skip to playlist
+function skip() {
+    router.push({ name: "playlist", query: { id: props.id }});
+    console.log("skip");
+}
+
 onBeforeMount(() => {
-    console.log('Card log');
-    console.log(props);
+
 });
 </script>
-s
+
 <style scoped lang="less">
 .card {
     position: relative;
@@ -56,9 +67,9 @@ s
 
         .cover {
             img {
-                max-width: 100;
-                max-height: 100px;
-                overflow: hidden;
+                width: 100;
+                height: 100px;
+                margin: 10px
             }
         }
         .name {

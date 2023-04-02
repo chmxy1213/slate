@@ -1,16 +1,17 @@
 <template>
     <nav class="nav">
-        <a href="#">后退</a>
-        <a href="#">前进</a>
+        <a href="javascript:;" @click="() => router.back()">后退</a>
+        <a href="javascript:;" @click="() => router.forward()">前进</a>
         <a href="#">{{ user.nickname }}</a>
     </nav>
 </template>
 
 <script setup>
 import { useUserStore } from '../stores/user';
+import { useRouter } from 'vue-router';
 
 const { user } = useUserStore();
-
+const router = useRouter();
 </script>
 
 <style scoped lang="less">

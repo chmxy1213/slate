@@ -181,7 +181,7 @@ async function updateCurTime() {
 
 // 播放列表点击事件
 function goPlayQueue() {
-    router.push({ name: "playList" });
+    router.push({ name: "playQueue" });
 }
 
 // 滚轮调节音量

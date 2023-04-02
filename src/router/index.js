@@ -6,13 +6,11 @@ const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
 		// register and login
-		// TODO
 		{
 			path: "/login",
 			name: "login",
 			component: () => import("../view/Login.vue"),
 		},
-		// TODO
 		{
 			path: "/",
 			name: "main",
@@ -22,6 +20,13 @@ const router = createRouter({
 					path: "home",
 					name: "home",
 					component: () => import("../view/Home.vue"),
+					children: [
+						{
+							path: "playlist",
+							name: "playlist",
+							component: () => import("../view/Playlist.vue"),
+						},
+					]
 				},
 				{
 					path: "search",
@@ -34,8 +39,8 @@ const router = createRouter({
 					component: () => import("../view/Like.vue"),
 				},
 				{
-					path: "playlist",
-					name: "playList",
+					path: "playqueue",
+					name: "playQueue",
 					component: () => import("../view/PlayQueue.vue")
 				},
 			]

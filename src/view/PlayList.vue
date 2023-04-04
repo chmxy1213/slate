@@ -6,12 +6,23 @@
             <div class="cover">
                 <img :src="thisTopList.coverImgUrl">
             </div>
-            <div class="playlist-name">
-                <p>{{ thisTopList.name }}</p>
+            <div class="section-two">
+                <div class="playlist-name">
+                    <p>{{ thisTopList.name }}</p>
+                </div>
+                <div class="playlist-playcount">
+                    <p>播放&nbsp;{{ thisTopList.playCount }}&nbsp;次</p>
+                </div>
             </div>
         </div>
         <!-- 页面体 -->
         <div class="body">
+            <div class="btns">
+                <div class="btn-play">
+                    <i class="fa fa fa-play"></i>
+                </div>
+            </div>
+            <div class="line"></div>
             <Table :header="header" :data="songs" />
         </div>
     </div>
@@ -55,7 +66,7 @@ function processData() {
         let dt_s = Math.floor(value.dt / 1000);
         let time_min = Math.floor(dt_s / 60);
         let time_s = Math.floor(dt_s - (time_min * 60));
-        let time_string = time_min + ':'+ time_s;
+        let time_string = time_min + ':' + time_s;
         // push to songs state
         songs.value.push({
             id: value.id,
@@ -90,29 +101,75 @@ onBeforeMount(async () => {
     flex-direction: column;
     width: 100%;
     height: 100%;
+    margin-top: 60px;
 
     .header {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        background-color: #457394;
 
         .cover {
             img {
-                width: 100px;
-                height: 100px;
+                width: 200px;
+                height: 200px;
+            }
+
+            padding: 20px;
+        }
+
+        .section-two {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 22px;
+
+            .playlist-name {
+                p {
+                    font-size: 35px;
+                    font-weight: 900;
+                }
+
+                margin-bottom: 10px;
             }
         }
 
-        .playlist-name {
-            p {
-                font-size: 20px;
-                font-weight: bold;
-            }
-        }
     }
+
 
     .body {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
+        background: linear-gradient(#213646, #121212);
+        padding-left: 20px;
+        padding-right: 20px;
+
+        .btns {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 20px;
+
+            .btn-play {
+                width: 50px;
+                height: 50px;
+                background-color: #1fdf64;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                i {
+                    color: #000;
+                    font-size: 20px;
+                }
+            }
+        }
+
+        .line {
+            width: 100%;
+            height: 1px;
+            background-color: #30383d;
+        }
 
         .table-header {
             display: grid;
@@ -121,7 +178,6 @@ onBeforeMount(async () => {
             grid-column-gap: 0px;
             grid-row-gap: 0px;
             padding: 5px;
-
         }
     }
 }

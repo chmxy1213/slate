@@ -7,13 +7,10 @@
             <div class="name">
                 <p>{{ name }}</p>
             </div>
-            <div class="description">
-                <p v-if="description.length > 20">{{ description.slice(0, 20) + '...' }}</p>
-                <p v-else>{{ description }}</p>
-            </div>
         </div>
-        <div title="播放" class="play-btn" :class="{ 'play-btn-visible': visual }"
-            :style="!visual ? 'display:none;transition: .5s;' : ''">
+        <!-- <div title="播放" class="play-btn" :class="{ 'play-btn-visible': visual }"
+            :style="!visual ? 'display:none;transition: .5s;' : ''"> -->
+        <div title="播放" class="play-btn" :class="[{ 'play-btn-visible': visual }, { 'play-btn-none': !visual }]">
             <i class="fa fa fa-play"></i>
         </div>
     </div>
@@ -38,7 +35,7 @@ const visual = ref(false);
 
 // skip to playlist
 function skip() {
-    router.push({ name: "playlist", query: { id: props.id }});
+    router.push({ name: "playlist", query: { id: props.id } });
     console.log("skip");
 }
 
@@ -53,8 +50,7 @@ onBeforeMount(() => {
     background-color: #292e2c;
     border-radius: 10px;
     transition: .5s;
-    padding: 20px;
-    height: 100px;
+    padding: 15px;
     max-width: 30%;
     display: flex;
     flex-grow: 0;
@@ -67,17 +63,19 @@ onBeforeMount(() => {
 
         .cover {
             img {
-                width: 100;
-                height: 100px;
-                margin: 10px
+                width: 120px;
+                height: 120px;
+                border-radius: 3px;
             }
         }
+
         .name {
             color: #f2f2f2;
             font-size: 16px;
             font-weight: 800;
             width: 100%;
         }
+
         .description {
             color: #7f7f7f;
             font-size: 12px;
@@ -92,7 +90,7 @@ onBeforeMount(() => {
     transition: .5s;
 }
 
-.play-btn-visible {
+.play-btn {
     position: absolute;
     bottom: 10%;
     right: 5%;
@@ -101,6 +99,23 @@ onBeforeMount(() => {
     border-radius: 100%;
     background-color: #1bc357;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    i {
+        color: #000;
+    }
+}
+
+.play-btn-visible {
+    animation: moveup .4s;
+}
+
+.play-btn-none {
+    opacity: 0;
+    transform: translateY(5%);
+    transition: .4s ease;
 }
 
 .play-btn-visible:hover {
@@ -108,13 +123,19 @@ onBeforeMount(() => {
     filter: drop-shadow(0 0 3px #1bc357);
 }
 
-.play-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
 
-    i {
-        color: #000;
+
+@keyframes moveup {
+    0% {
+        // transform: translateY(0px);
+        bottom: 5%;
+        opacity: 0;
+    }
+
+    100% {
+        // transform: translateY(-10px);
+        bottom: 10%;
+        opacity: 1;
     }
 }
 </style>

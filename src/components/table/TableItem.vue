@@ -117,13 +117,13 @@ onBeforeMount(() => {
     }
 }
 
-.container-music-item:hover {
+.table-item-container:hover {
     border-radius: 10px;
     background-color: #2a2a2a;
     cursor: pointer;
     opacity: 1;
 
-    .collect {
+    .block-one {
         .index {
             .id {
                 display: none !important;

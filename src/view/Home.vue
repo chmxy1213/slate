@@ -1,7 +1,7 @@
 <template>
-    <div class="home-msg">
-        <div class="test">
-            <Card class="test-2" v-for="(item, index) in topLists.data" v-bind="item" :key="index" />
+    <div class="home-container">
+        <div class="cards">
+            <Card class="card" v-for="(item, index) in topLists.data" v-bind="item" :key="index" />
         </div>
         <button @click="testNootificationEvent">测试通知</button>
     </div>
@@ -35,13 +35,15 @@ async function init() {
     if (!topLists.init) {
         topLists.ids.forEach(async (id) => {
             let res = await invoke("get_playlist_detail", { id: id });
+            console.log(res);
             if (res.code === 200) {
-                let { id, name, description, coverImgUrl } = res.playlist;
+                let { id, name, description, coverImgUrl, playCount } = res.playlist;
                 topLists.data.push({
                     id: id,
                     name: name,
                     description: description,
-                    coverImgUrl: coverImgUrl
+                    coverImgUrl: coverImgUrl,
+                    playCount: playCount,
                 });
             }
         });
@@ -58,25 +60,23 @@ onBeforeMount(async () => {
 </script>
 
 <style scoped lang="less">
-.home-msg {
+.home-container {
     display: flex;
     align-items: flex-start;
     flex-direction: column;
     width: 100%;
     height: 100%;
-
-    .test {
+    margin-top: 60px;
+    .cards {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
 
-        .test-2 {
+        .card {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-grow: 0;
-            width: 150px;
-            height: 150px;
             margin: 10px;
         }
     }

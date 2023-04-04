@@ -1,6 +1,6 @@
 <!-- 表行 -->
 <template>
-    <div class="table-item-container">
+    <div class="table-item-container" @dblclick="doubleClkEvent">
         <div class="block-one">
             <div class="index">
                 <span class="id">{{ id }}</span>
@@ -31,12 +31,22 @@
 
 <script setup>
 import { onBeforeMount } from 'vue';
+import { usePlayListStore } from '../../stores/playList';
+
+const { playlistState, add, remove, previous, next, playThis } = usePlayListStore();
 
 // data: [id, picUrl, name, artists, album, time]
 const props = defineProps({
     id: { type: Number, required: true },
     data: { type: Object, required: true },
 });
+
+// double click to play
+function doubleClkEvent() {
+    add(props.data.id);
+
+    // playThis(playlistState.list.length - 1);
+}
 
 onBeforeMount(() => {
 });
@@ -50,6 +60,7 @@ onBeforeMount(() => {
     grid-column-gap: 0px;
     grid-row-gap: 0px;
     padding: 5px;
+    color: #b3b3b3;
 
     .block-one {
         grid-area: 1 / 1 / 2 / 3;
@@ -92,11 +103,14 @@ onBeforeMount(() => {
 
             .name {
                 display: flex;
-
+                color: #fff;
+                font-size: 15px;
             }
 
             .artists {
                 display: flex;
+                // color: #b3b3b3;
+                font-size: 12px;
             }
         }
     }
@@ -122,7 +136,8 @@ onBeforeMount(() => {
     background-color: #2a2a2a;
     cursor: pointer;
     opacity: 1;
-
+    color: #fff;
+    
     .block-one {
         .index {
             .id {

@@ -1,10 +1,11 @@
 <!-- 歌单组件 -->
 <template>
     <div class="playlist-container">
+        <canvas id="canvas" style="display: none;"></canvas>
         <!-- 页面头 -->
-        <div class="header">
+        <div class="playlist-header">
             <div class="cover">
-                <img :src="thisTopList.coverImgUrl">
+                <img id="cover" crossorigin="anonymous" :src="thisTopList.coverImgUrl">
             </div>
             <div class="section-two">
                 <div class="playlist-name">
@@ -16,13 +17,12 @@
             </div>
         </div>
         <!-- 页面体 -->
-        <div class="body">
+        <div class="playlist-body">
             <div class="btns">
                 <div class="btn-play">
                     <i class="fa fa fa-play"></i>
                 </div>
             </div>
-            <div class="line"></div>
             <Table :header="header" :data="songs" />
         </div>
     </div>
@@ -79,6 +79,53 @@ function processData() {
     });
 }
 
+// compute imgage's theme color
+function comClr() {
+    let canvas = document.getElementById("canvas");
+    let img = document.getElementById("cover");
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    let context = canvas.getContext("2d");
+
+    context.drawImage(img, 0, 0, img.width, img.height);
+
+    // 获取像素数据
+    let imageData = context.getImageData(0, 0, img.width, img.height).data;
+    console.log(imageData);
+    
+    let r = 1, g = 1, b = 1;
+    // 取所有像素的平均值
+    for (var row = 0; row < img.height; row++) {
+        for (var col = 0; col < img.width; col++) {
+            // console.log(data[((img.width * row) + col) * 4])
+            if (row == 0) {
+                r += imageData[((img.width * row) + col)];
+                g += imageData[((img.width * row) + col) + 1];
+                b += imageData[((img.width * row) + col) + 2];
+            } else {
+                r += imageData[((img.width * row) + col) * 4];
+                g += imageData[((img.width * row) + col) * 4 + 1];
+                b += imageData[((img.width * row) + col) * 4 + 2];
+            }
+        }
+    }
+
+    console.log(r, g, b)
+    // 求取平均值
+    r /= (img.width * img.height);
+    g /= (img.width * img.height);
+    b /= (img.width * img.height);
+
+    // 将最终的值取整
+    r = Math.round(r);
+    g = Math.round(g);
+    b = Math.round(b);
+    console.log(r, g, b)
+    document.getElementsByClassName("playlist-header")[0].style.background = `linear-gradient(rgba(${r}, ${g}, ${b}, 1), rgba(${r}, ${g}, ${b}, 0.3))`;
+    document.getElementsByClassName("playlist-body")[0].style.background = `linear-gradient(rgba(${r}, ${g}, ${b}, 0.5), #121212)`;
+}
+
 onBeforeMount(async () => {
     // LOG
     console.log("Playlist.vue's log.");
@@ -92,6 +139,9 @@ onBeforeMount(async () => {
     await get(10, 0);
     // Process data
     processData();
+
+    // TEST
+    comClr();
 });
 </script>
 
@@ -103,7 +153,7 @@ onBeforeMount(async () => {
     height: 100%;
     margin-top: 60px;
 
-    .header {
+    .playlist-header {
         display: flex;
         flex-direction: row;
         background-color: #457394;
@@ -124,22 +174,20 @@ onBeforeMount(async () => {
             padding: 22px;
 
             .playlist-name {
+                margin-bottom: 10px;
+
                 p {
                     font-size: 35px;
                     font-weight: 900;
                 }
-
-                margin-bottom: 10px;
             }
         }
-
     }
 
-
-    .body {
+    .playlist-body {
         display: flex;
         flex-direction: column;
-        background: linear-gradient(#213646, #121212);
+        // background: linear-gradient(#213646, #121212);
         padding-left: 20px;
         padding-right: 20px;
 
@@ -157,27 +205,13 @@ onBeforeMount(async () => {
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                cursor: pointer;
 
                 i {
                     color: #000;
                     font-size: 20px;
                 }
             }
-        }
-
-        .line {
-            width: 100%;
-            height: 1px;
-            background-color: #30383d;
-        }
-
-        .table-header {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: 1fr;
-            grid-column-gap: 0px;
-            grid-row-gap: 0px;
-            padding: 5px;
         }
     }
 }

@@ -31,6 +31,7 @@ async function dblclick(obj) {
         flex-direction: column;
         padding: 10px;
         flex-grow: 1;
+        margin-top: 60px;
         .bg-1 {
             background-color: #000;
         }

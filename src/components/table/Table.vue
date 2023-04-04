@@ -2,14 +2,21 @@
 <template>
     <div class="table-container">
         <div class="table-title">
-            <div class="title-one">{{ header[0] }}</div>
-            <div class="title-two">{{ header[1] }}</div>
-            <div class="title-three">{{ header[2] }}</div>
-            <div class="title-four">{{ header[3] }}</div>
+            <div class="title-one">
+                <span class="idx">{{ header[0] }}</span>
+                <span>{{ header[1] }}</span>
+            </div>
+            <div class="title-two">
+                <span>{{ header[2] }}</span>
+            </div>
+            <div class="title-three">
+                <span>{{ header[3] }}</span>
+            </div>
         </div>
+        <div class="line"></div>
         <div class="table-body">
             <div class="table-item" v-for="(item, index) in data">
-                <TableItem :id="index+1" :data="item" :key="index"/>
+                <TableItem :id="index + 1" :data="item" :key="index" />
             </div>
         </div>
     </div>
@@ -37,22 +44,34 @@ const props = defineProps({
         grid-template-rows: 1fr;
         grid-column-gap: 0px;
         grid-row-gap: 0px;
+        margin-top: 3px;
+        margin-bottom: 3px;
 
         .title-one {
-            grid-area: 1 / 1 / 2 / 2;
+            grid-area: 1 / 1 / 2 / 3;
+            margin-left: 20px;
+
+            .idx {
+                display: inline-block;
+                margin-right: 38px;
+            }
         }
 
         .title-two {
-            grid-area: 1 / 2 / 2 / 3;
-        }
-
-        .title-three {
             grid-area: 1 / 3 / 2 / 4;
         }
 
-        .title-four {
+        .title-three {
+            display: flex;
+            justify-content: flex-end;
             grid-area: 1 / 4 / 2 / 5;
         }
     }
-}
-</style>
+
+    .line {
+        width: 100%;
+        height: 1px;
+        background-color: #30383d;
+        margin-bottom: 10px;
+    }
+}</style>

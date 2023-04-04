@@ -62,7 +62,7 @@ export const usePlayListStore = defineStore("playList", () => {
     // Play music by index.
     async function playThis(index) {
         playlistState.value.idx = index;
-        await load();
+        await load(playlistState.value.list[playlistState.value.idx]);
         play();
     }
 

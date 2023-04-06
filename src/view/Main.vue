@@ -64,7 +64,7 @@ onBeforeMount(async () => {
 <style scoped lang="less">
 .container {
 	display: grid;
-	grid-template-columns: repeat(9, 1fr);
+	grid-template-columns: repeat(19, 1fr);
 	grid-template-rows: repeat(39, 1fr);
 	background-color: #00000000;
 	width: 100%;
@@ -73,7 +73,7 @@ onBeforeMount(async () => {
 
 	.menus {
 		grid-column-start: 1;
-		grid-column-end: 2;
+		grid-column-end: 4;
 		grid-row-start: 1;
 		grid-row-end: 35;
 		// background-color: #000000;
@@ -82,8 +82,8 @@ onBeforeMount(async () => {
 	}
 
 	.body {
-		grid-column-start: 2;
-		grid-column-end: 10;
+		grid-column-start: 4;
+		grid-column-end: 20;
 		grid-row-start: 1;
 		grid-row-end: 35;
 		// background-color: #121212;
@@ -100,7 +100,7 @@ onBeforeMount(async () => {
 
 	.player {
 		grid-column-start: 1;
-		grid-column-end: 10;
+		grid-column-end: 20;
 		grid-row-start: 35;
 		grid-row-end: 40;
 		background-color: #181818;

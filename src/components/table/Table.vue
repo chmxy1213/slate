@@ -74,4 +74,5 @@ const props = defineProps({
         background-color: #30383d;
         margin-bottom: 10px;
     }
-}</style>
+}
+</style>

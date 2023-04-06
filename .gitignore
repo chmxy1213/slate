@@ -26,3 +26,4 @@ dist-ssr
 # custom
 *.mp3
 test.json
+pnpm-lock.yaml

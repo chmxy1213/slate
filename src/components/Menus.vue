@@ -66,12 +66,11 @@ const navClick = function (i) {
 
             li {
                 cursor: pointer;
-                border: 1px solid white;
                 list-style: none;
                 margin-bottom: 20px;
                 display: flex;
                 flex-direction: row;
-                justify-content: center;
+                justify-content: flex-start;
                 align-items: center;
                 width: 100%;
                 opacity: 0.7;

@@ -3,6 +3,14 @@ import App from "./App.vue";
 import router from "./router";
 import { createPinia } from 'pinia';
 
+import { library } from "@fortawesome/fontawesome-svg-core";
+
+import { fas, faR, faHeart } from "@fortawesome/free-solid-svg-icons";
+
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+library.add(fas, faR, faHeart);
+
 // pinia pulgin of save data to local
 function testpuglin(context) {
     console.log(context);
@@ -19,7 +27,8 @@ const app = createApp(App);
 const pinia = createPinia();
 // pinia.use(testpuglin());
 
-app.use(router);
-app.use(pinia); 
+app.component('font-awesome-icon', FontAwesomeIcon);
 
+app.use(router);
+app.use(pinia);
 app.mount("#app");

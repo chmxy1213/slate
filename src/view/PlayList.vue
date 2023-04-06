@@ -11,6 +11,9 @@
                 <div class="playlist-name">
                     <p>{{ thisTopList.name }}</p>
                 </div>
+                <div class="playlist-description">
+                    <span>{{ thisTopList.description }}</span>
+                </div>
                 <div class="playlist-playcount">
                     <p>播放&nbsp;{{ thisTopList.playCount }}&nbsp;次</p>
                 </div>
@@ -92,7 +95,6 @@ function comClr() {
 
     // 获取像素数据
     let imageData = context.getImageData(0, 0, img.width, img.height).data;
-    console.log(imageData);
     
     let r = 1, g = 1, b = 1;
     // 取所有像素的平均值
@@ -111,7 +113,6 @@ function comClr() {
         }
     }
 
-    console.log(r, g, b)
     // 求取平均值
     r /= (img.width * img.height);
     g /= (img.width * img.height);
@@ -121,7 +122,7 @@ function comClr() {
     r = Math.round(r);
     g = Math.round(g);
     b = Math.round(b);
-    console.log(r, g, b)
+
     document.getElementsByClassName("playlist-header")[0].style.background = `linear-gradient(rgba(${r}, ${g}, ${b}, 1), rgba(${r}, ${g}, ${b}, 0.3))`;
     document.getElementsByClassName("playlist-body")[0].style.background = `linear-gradient(rgba(${r}, ${g}, ${b}, 0.5), #121212)`;
 }
@@ -179,6 +180,15 @@ onBeforeMount(async () => {
                 p {
                     font-size: 35px;
                     font-weight: 900;
+                }
+            }
+            .playlist-description {
+                margin-top: 10px;
+                margin-bottom: 10px;
+                span {
+                    display: inline-block;
+                    font-size: 14px;
+                    color: #b3b3b3;
                 }
             }
         }

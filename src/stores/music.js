@@ -69,5 +69,5 @@ export const useMusicStore = defineStore("music", () => {
         music.value.playStatus = false;
     }
 
-    return { music, load, play, pause };
+    return { music, load, play, pause, initAudio };
 });

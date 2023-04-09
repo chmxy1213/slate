@@ -24,7 +24,7 @@ import Player from "../components/Player.vue";
 import { useMusicStore } from "../stores/music";
 import { usePlayListStore } from "../stores/playList";
 
-const { music, load, play, pause } = useMusicStore();
+const { music, load, play, pause, initAudio } = useMusicStore();
 const { playlistState, previous, next, add, remove } = usePlayListStore();
 
 let ids = [28731108, 34274470, 65533, 65528, 1974443814, 65536, 28563317, 65538];
@@ -37,13 +37,12 @@ onBeforeMount(async () => {
 		console.log("Service is not ok!");
 	}
 
+	// init audio
+	initAudio();
+
 	ids.forEach(async (id) => {
 		await add(id);
 	});
-
-	// setTimeout(async () => {
-	// 	await load(playlistState.list[playlistState.idx]);
-	// }, 1000);
 
 	await listen("event-previous", (event) => {
 		console.log("上一首");

@@ -123,10 +123,7 @@
 </template>
 
 <script setup>
-import Table from "../table/Table.vue";
-import List from "./List.vue";
 import { usePlayListStore } from "../../stores/playList";
-import Card from "../Card.vue";
 
 const { playlistState, add, remove, previous, next, playThis } = usePlayListStore();
 

@@ -1,10 +1,19 @@
 <template>
     <div class="box">
         <div class="cover">
-            <div class="cover-img"><img :src="music.info.picUrl"></div>
+            <div class="cover-img">
+                <img v-if="music.info.picUrl" id="cover" :src="music.info.picUrl" @load="imgLoaded" @error="imgError">
+                <span v-else class="img-err"></span>
+            </div>
             <div class="music-info">
-                <div class="music-name"><a href="javascript:;">{{ music.info.name }}</a></div>
-                <div class="music-artist"><a href="javascript:;">{{ music.info.artists }}</a></div>
+                <div class="music-name">
+                    <a v-if="music.info.name.length >= 10" href="javascript:;">{{ music.info.name.slice(0, 10) + '...' }}</a>
+                    <a v-else href="javascript:;">{{ music.info.name }}</a>
+                </div>
+                <div class="music-artist">
+                    <a v-if="music.info.artists.length >= 10" href="javascript:;">{{ music.info.artists.slice(0, 10) + '...' }}</a>
+                    <a v-else href="javascript:;">{{ music.info.artists }}</a>
+                </div>
             </div>
             <div class="fav-btn">
                 <a href="#">
@@ -206,9 +215,11 @@ onBeforeMount(() => {
             clearInterval(interval);
         }
     }, 100);
+
 });
 
 onMounted(() => {
+    // document.getElementById("cover").onload = imgLoaded;
     let volumeDom = document.getElementById("id-volume");
     volumeDom.addEventListener("mousewheel", changeVolumeEvent);
 });
@@ -226,10 +237,12 @@ onMounted(() => {
     display: flex;
     align-items: center;
     flex-direction: row;
-    justify-content: center;
-    // border: 1px antiquewhite solid; // test
+    justify-content: space-between;
+    position: relative;
 
     .cover {
+        position: absolute;
+        left: 0;
         display: flex;
         flex-direction: row;
         flex-grow: 0;
@@ -252,6 +265,13 @@ onMounted(() => {
             img {
                 width: 100%;
                 height: 100%;
+            }
+
+            .img-err {
+                display: inline-block;
+                width: 100%;
+                height: 100%;
+                background: #f2f2f2;
             }
         }
 
@@ -279,7 +299,6 @@ onMounted(() => {
     }
 
     .player {
-        // border: 1px antiquewhite solid; // test
         display: flex;
         flex-direction: column;
         text-align: center;
@@ -291,13 +310,6 @@ onMounted(() => {
             flex-direction: row;
             justify-content: center;
             align-items: c1enter;
-            // border-bottom: white 1px solid; // test
-
-            .button {
-                margin: 5px 0px 5px 0px;
-                padding: 5px;
-                cursor: pointer;
-            }
 
             .control {
                 font-size: 25px;
@@ -305,6 +317,14 @@ onMounted(() => {
                 align-items: center;
                 padding: 1px;
                 margin: 0;
+
+                .button {
+                    margin: 5px 0px 5px 0px;
+                    padding: 5px;
+                    cursor: pointer;
+                    width: 30px;
+                    height: 30px;
+                }
             }
 
             .play-prev {
@@ -323,7 +343,6 @@ onMounted(() => {
             align-items: center;
             flex-grow: 1;
 
-            // background-color: aliceblue;
             .now-time {
                 margin-right: 10px;
             }
@@ -333,11 +352,10 @@ onMounted(() => {
             }
 
             .all-bar {
-                width: 40%;
+                width: 30%;
                 background-color: #5e5e5e;
                 height: 5px;
                 border-radius: 4px;
-                // z-index: auto;
                 position: relative;
                 cursor: pointer;
 
@@ -367,6 +385,8 @@ onMounted(() => {
     }
 
     .tools {
+        position: absolute;
+        right: 0;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -411,4 +431,5 @@ onMounted(() => {
             margin-right: 10px;
         }
     }
-}</style>
+}
+</style>

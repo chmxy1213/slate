@@ -75,8 +75,7 @@ onBeforeMount(async () => {
 		grid-column-end: 4;
 		grid-row-start: 1;
 		grid-row-end: 35;
-		// background-color: #000000;
-		background-color: #22212c;
+		background-color: #121212;
 		border-right: 1px solid #282828;
 	}
 
@@ -85,8 +84,7 @@ onBeforeMount(async () => {
 		grid-column-end: 20;
 		grid-row-start: 1;
 		grid-row-end: 35;
-		// background-color: #121212;
-		background-color: #151320;
+		background-color: #000000;
 		overflow: auto;
 		display: flex;
 		flex-direction: column;

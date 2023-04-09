@@ -6,7 +6,9 @@ use crate::models::music::MusicJSON;
 use crate::models::music_url::MusicUrlJson;
 use crate::models::playlist_detail::PlaylistDetail;
 use crate::models::register::{RegisterReq, RegisterRes};
-use crate::models::search::{SearchResSong, SearchResAlbum, SearchResType, SearchResArtist, SearchResPlaylist};
+use crate::models::search::{
+    SearchResAlbum, SearchResArtist, SearchResPlaylist, SearchResSong, SearchResType,
+};
 use crate::models::service::ServiceState;
 use crate::*;
 
@@ -71,31 +73,33 @@ pub async fn check(token: String) -> Result<CheckRes, String> {
         .default_headers(headers)
         .build()
         .unwrap();
-    let res = client
-        .get(url)
-        .send()
-        .await
-        .unwrap()
-        .text()
-        .await
-        .unwrap();
-    let res: CheckRes = serde_json::from_str(res.as_str()).unwrap();
-    Ok(res)
+    let res = client.get(url).send().await.unwrap().text().await.unwrap();
+    
+    println!("res: {}", res);
+    let wrap: Result<CheckRes, serde_json::Error> = serde_json::from_str(res.as_str());
+    match wrap {
+        Ok(res) => Ok(res),
+        Err(e) => Ok(CheckRes {
+            code: 401,
+            msg: e.to_string(),
+            data: None,
+        }),
+    }
 }
 
 // login
 #[tauri::command]
 pub async fn login(req_data: LoginReq, t: String) -> Result<LoginRes, ()> {
     let url = format!("http://localhost:8000/login?t={}", t);
-    
+
     let json_value: serde_json::Value;
     if t == "nickname" {
-        json_value =  serde_json::json!({
+        json_value = serde_json::json!({
             "nickname": req_data.username,
             "password": req_data.password,
         });
     } else if t == "email" {
-        json_value =  serde_json::json!({
+        json_value = serde_json::json!({
             "email": req_data.username,
             "password": req_data.password,
         });
@@ -154,7 +158,10 @@ pub async fn get_playlist_detail(id: u64) -> Result<PlaylistDetail, String> {
 /// Get the hot music list
 #[tauri::command]
 pub async fn get_hot_music_list(id: u64, limit: u8, offset: u8) -> Result<MusicJSON, String> {
-    let url = format!("http://localhost:3000/playlist/track/all?id={}&limit={}&offset={}", id, limit, offset);
+    let url = format!(
+        "http://localhost:3000/playlist/track/all?id={}&limit={}&offset={}",
+        id, limit, offset
+    );
     let resp = reqwest::get(url)
         .await
         .unwrap()
@@ -164,36 +171,38 @@ pub async fn get_hot_music_list(id: u64, limit: u8, offset: u8) -> Result<MusicJ
     Ok(resp)
 }
 
-
 /// Search invoke
 #[allow(dead_code)]
 #[tauri::command]
-pub async fn search(tp: u64, keyword: String, limit: u64, offset: u64) -> Result<SearchResType, String> {
-    let url = format!("http://localhost:3000/cloudsearch?type={}&keywords={}&limit={}&offset={}", tp, keyword, limit, offset);
-    let body = reqwest::get(url)
-        .await
-        .unwrap()
-        .text()
-        .await
-        .unwrap();
+pub async fn search(
+    tp: u64,
+    keyword: String,
+    limit: u64,
+    offset: u64,
+) -> Result<SearchResType, String> {
+    let url = format!(
+        "http://localhost:3000/cloudsearch?type={}&keywords={}&limit={}&offset={}",
+        tp, keyword, limit, offset
+    );
+    let body = reqwest::get(url).await.unwrap().text().await.unwrap();
 
     match tp {
         1 => {
             let res = serde_json::from_str::<SearchResSong>(&body).unwrap();
             return Ok(SearchResType::Song(res));
-        },
+        }
         10 => {
             let res = serde_json::from_str::<SearchResAlbum>(&body).unwrap();
             return Ok(SearchResType::Album(res));
-        },
+        }
         100 => {
             let res = serde_json::from_str::<SearchResArtist>(&body).unwrap();
             return Ok(SearchResType::Artist(res));
-        },
+        }
         1000 => {
             let res = serde_json::from_str::<SearchResPlaylist>(&body).unwrap();
             return Ok(SearchResType::Playlist(res));
-        },
+        }
         _ => {
             return Err("unknown type".into());
         }
@@ -241,7 +250,7 @@ mod tests {
 
     #[test]
     fn test_login() {
-        let req_data = LoginReq{
+        let req_data = LoginReq {
             username: "Dave".into(),
             password: "password".into(),
         };
@@ -251,7 +260,7 @@ mod tests {
 
     #[test]
     fn test_register() {
-        let req_data = RegisterReq{
+        let req_data = RegisterReq {
             nickname: "Dave2".into(),
             password: "password".into(),
             email: "Dave2@emai.com".into(),

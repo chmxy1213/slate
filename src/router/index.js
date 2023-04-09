@@ -58,13 +58,15 @@ router.beforeEach(async (to, from) => {
 	if (!user.token) {
 		load();
 	}
-	if (to.name === "main" && (from.name !== "main" && from.name !== undefined)) {
+	if (to.name === "main" && from.name !== "main") {
 		if (user.token === "") {
-			router.push({ name: "login" })
+			router.push({ name: "login" });
+			return false;
 		}
 		let res = await invoke("check", { token: user.token });
 		if (res.code !== 200) {
 			router.push({ name: "login" })
+			return false;
 		}
 		user.id = res.data.id;
 		user.nickname = res.data.name;

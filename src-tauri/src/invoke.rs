@@ -6,7 +6,7 @@ use crate::models::music::MusicJSON;
 use crate::models::music_url::MusicUrlJson;
 use crate::models::playlist_detail::PlaylistDetail;
 use crate::models::register::{RegisterReq, RegisterRes};
-use crate::models::search::{SearchResSong, SearchResAlbum, SearchResType, SearchResArtist};
+use crate::models::search::{SearchResSong, SearchResAlbum, SearchResType, SearchResArtist, SearchResPlaylist};
 use crate::models::service::ServiceState;
 use crate::*;
 
@@ -190,6 +190,10 @@ pub async fn search(tp: u64, keyword: String, limit: u64, offset: u64) -> Result
             let res = serde_json::from_str::<SearchResArtist>(&body).unwrap();
             return Ok(SearchResType::Artist(res));
         },
+        1000 => {
+            let res = serde_json::from_str::<SearchResPlaylist>(&body).unwrap();
+            return Ok(SearchResType::Playlist(res));
+        },
         _ => {
             return Err("unknown type".into());
         }
@@ -299,6 +303,16 @@ mod tests {
         let limit: u64 = 10;
         let offset: u64 = 0;
         let res = aw!(search(tp, keyword, limit, offset)).unwrap();
+        println!("{:?}", res);
+    }
+
+    #[test]
+    fn test_search_type_playlist() {
+        let tp: u64 = 1000;
+        let keyword = "周杰伦".into();
+        let limit: u64 = 10;
+        let offset: u64 = 0;
+        let res = aw!(search(tp, keyword, limit, offset));
         println!("{:?}", res);
     }
 }

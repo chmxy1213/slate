@@ -4,17 +4,17 @@
             <label for="search" class="label">
                 <font-awesome-icon class="icon" :icon="['fas', 'magnifying-glass']" />
             </label>
-            <input id="search" type="text" placeholder="想听什么？" @keyup.enter="searcheEvent" v-model="searchKeyword">
+            <input id="search" type="text" placeholder="想听什么？" @keyup.enter="searcheEvent" v-model="searchStore.keyword">
         </div>
         <div class="search-label">
-            <span :class="{ 'selected': selectedSeachType == index }" v-for="(item, index) in searchTypeState" :key="index"
-                @click="selectedSeachType = index">{{ item.type }}</span>
+            <span :class="{ 'selected': searchStore.typeIdx == index }" v-for="(item, index) in searchTypes" :key="index"
+                @click="searchStore.typeIdx = index">{{ item.type }}</span>
         </div>
         <div class="search-res">
             <!-- 加载动画 -->
             <Loader :dsp="resState == 0" />
             <div class="res-table" :style="resState == 1 ? '' : 'display:none;'">
-                <Box :searchType="searchTypeState[selectedSeachType].id" :data="transmitData" />
+                <Box :searchType="searchTypes[searchStore.typeIdx].id" :data="searchStore.data" />
             </div>
         </div>
     </div>
@@ -27,95 +27,65 @@ import { useSearchStore } from "../stores/search";
 import Box from "../components/search/Box.vue";
 import Loader from "../components/Loader.vue";
 
-const { searchRes } = useSearchStore();
+const { searchStore, searchTypes } = useSearchStore();
 
-const selectedSeachType = ref(0);
 // result have three state: loading, success, null map to 0, 1, 2
 const resState = ref(2);
-const searchKeyword = ref("");
-const searchTypeState = ref([
-    { id: 1, type: "单曲" },
-    { id: 10, type: "专辑" },
-    { id: 100, type: "歌手" },
-    { id: 1000, type: "歌单" },
-    // { id: 1002, type: "用户" },
-    // { id: 1004, type: "MV" },
-    // { id: 1006, type: "歌词" },
-    // { id: 1009, type: "电台" },
-    // { id: 1014, type: "视频" },
-    // { id: 1018, type: "综合" },
-    // { id: 2000, type: "声音" },
-]);
-
-// TEST
-const data = ref([]);
-const transmitData = ref([]);
 
 // TODO: this fucntion is some same with `req.js` and `Playlist.vue`.
 // process the request's data
 // Require: id, name, picUrl, artists, album, time
-function processData(tp) {
-    // TODO
-    if (tp === 1) {
-        let tmp = [];
-        data.value.forEach((value) => {
-            // Process artists
-            let ars = "";  // Artist String
-            value.ar.forEach((value) => {
-                ars += `${value.name}`;
-            });
-            ars = ars.replace(/^(\s|,)+|(\s|,)+$/g, '');
-            // Process duration
-            let dt_s = Math.floor(value.dt / 1000);
-            let time_min = Math.floor(dt_s / 60);
-            let time_s = Math.floor(dt_s - (time_min * 60));
-            let time_string = time_min + ':' + time_s;
-            // push to songs state
-            tmp.push({
-                id: value.id,
-                name: value.name,
-                picUrl: value.al.picUrl,
-                artists: ars,
-                album: value.al.name,
-                time: time_string,
-            });
+function processData(songs) {
+    let tmp = [];
+    songs.forEach((value) => {
+        // Process artists
+        let ars = "";  // Artist String
+        value.ar.forEach((value) => {
+            ars += `${value.name}`;
         });
-        transmitData.value = tmp;
-    }
+        ars = ars.replace(/^(\s|,)+|(\s|,)+$/g, '');
+        // Process duration
+        let dt_s = Math.floor(value.dt / 1000);
+        let time_min = Math.floor(dt_s / 60);
+        let time_s = Math.floor(dt_s - (time_min * 60));
+        let time_string = time_min + ':' + time_s;
+        // push to songs state
+        tmp.push({
+            id: value.id,
+            name: value.name,
+            picUrl: value.al.picUrl,
+            artists: ars,
+            album: value.al.name,
+            time: time_string,
+        });
+    });
+    return tmp;
 }
 
 // Search event
 async function searcheEvent() {
-    if (searchKeyword.value == "") {
+    if (searchStore.keyword == "") {
         console.log("搜索关键字不能为空");
         return;
     }
     resState.value = 0;
     let res = await invoke("search", {
-        tp: searchTypeState.value[selectedSeachType.value].id,
-        keyword: searchKeyword.value,
+        tp: searchTypes[searchStore.typeIdx].id,
+        keyword: searchStore.keyword,
         limit: 30,
         offset: 0
     });
-
     console.log(res);
 
     // TODO
-    if (searchTypeState.value[selectedSeachType.value].id == 1) {
-        data.value = res.Song.result.songs;
-    } else if (searchTypeState.value[selectedSeachType.value].id == 10) {
-        data.value = res.Album.result.albums;
-        transmitData.value = data.value;
-    } else if (searchTypeState.value[selectedSeachType.value].id == 100) {
-        data.value = res.Artist.result.artists;
-        transmitData.value = data.value;
-    }
-
-    // TODO
-    processData(searchTypeState.value[selectedSeachType.value].id);
-    if (searchTypeState.value[selectedSeachType.value].id == 1) {
-        searchRes.latest.keyword = searchKeyword.value;
-        searchRes.latest.data = transmitData.value;
+    if (searchTypes[searchStore.typeIdx].id == 1) {
+        searchStore.data.songs = processData(res.Song.result.songs);
+    } else if (searchTypes[searchStore.typeIdx].id == 10) {
+        searchStore.data.albums = res.Album.result.albums;
+    } else if (searchTypes[searchStore.typeIdx].id == 100) {
+        searchStore.data.artists = res.Artist.result.artists;
+    } else if (searchTypes[searchStore.typeIdx].id == 1000) {
+        searchStore.data.playlists = res.Playlist.result.playlists;
     }
 
     resState.value = 1;
@@ -123,9 +93,7 @@ async function searcheEvent() {
 
 onBeforeMount(() => {
     console.log('搜索 log');
-    if (searchRes.latest.keyword != null && searchRes.latest.data != null) {
-        searchKeyword.value = searchRes.latest.keyword;
-        songs.value = searchRes.latest.data;
+    if (searchStore.keyword != "") {
         resState.value = 1;
     }
 });

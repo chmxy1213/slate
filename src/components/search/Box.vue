@@ -19,7 +19,7 @@
                 </div>
                 <div class="line"></div>
                 <div class="table-body">
-                    <div class="table-item" v-for="(item, index) in props.data" :key="index">
+                    <div class="table-item" v-for="(item, index) in props.data.songs" :key="index">
                         <div class="table-item-container" @dblclick="doubleClkEvent">
                             <div class="block-one">
                                 <div class="index">
@@ -64,7 +64,7 @@
         <div class="box-inner" v-else-if="props.searchType == 10">
             <!-- <div>专辑</div> -->
             <div class="inner-albums-container">
-                <div class="album-card" v-for="item in props.data" :key="item.id">
+                <div class="album-card" v-for="item in props.data.albums" :key="item.id">
                     <div class="cover">
                         <img :src="item.picUrl">
                     </div>
@@ -83,7 +83,7 @@
         <!-- 歌手 -->
         <div class="box-inner" v-else-if="props.searchType == 100">
             <div class="inner-artist-container">
-                <div class="artist-card" v-for="item in props.data" :key="item.id">
+                <div class="artist-card" v-for="item in props.data.artists" :key="item.id">
                     <div class="cover">
                         <img :src="item.picUrl">
                     </div>
@@ -98,8 +98,24 @@
         </div>
         <!-- 歌单 -->
         <div class="box-inner" v-else-if="props.searchType == 1000">
-            <!-- <List :data="props.data"/> -->
-            <div>歌单</div>
+            <div class="inner-playlist-container">
+                <div class="playlist-card" v-for="item in props.data.playlists" :key="item.id">
+                    <div class="cover">
+                        <img :src="item.coverImgUrl">
+                    </div>
+                    <div class="info">
+                        <div class="name">
+                            <span v-if="item.name.length >= 10">{{ item.name.slice(0, 9) + '...' }}</span>
+                            <span v-else>{{ item.name }}</span>
+                        </div>
+                        <div class="playcount">
+                            <span>播放&nbsp;</span>
+                            <span>{{ item.playCount }}</span>
+                            <span>&nbsp;次</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- 1002: 用户, 1004: MV, 1006: 歌词, 1009: 电台, 1014: 视频, 1018:综合, 2000:声音 -->
         <!-- 不支持 -->
@@ -122,7 +138,7 @@ const props = defineProps({
         required: true,
     },
     data: {
-        type: Array,
+        type: Object,
         default: {},
         required: true,
     },
@@ -442,6 +458,70 @@ function like(id) {
             }
 
             .artist-card:hover {
+                cursor: pointer;
+                background-color: #434242;
+                transition: .5s;
+                filter: drop-shadow(0px 0px 5px #b3b3b3);
+                .cover {
+                    animation: swing .2s;
+                }
+            }
+        }
+
+        .inner-playlist-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            align-content: flex-start;
+
+            .playlist-card {
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                flex-direction: column;
+                margin: 10px;
+                background-color: #2a2a2a;
+                border-radius: 5px;
+                padding: 10px;
+
+                .cover {
+                    img {
+                        width: 150px;
+                        height: 150px;
+                        border-radius: 5px;
+                        margin-bottom: 20px;
+                    }
+                }
+
+                .info {
+                    display: flex;
+                    justify-content: center;
+                    align-items: flex-start;
+                    flex-direction: column;
+                    width: 100%;
+
+                    .name {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        color: #fff;
+                        font-size: 15px;
+                        margin-bottom: 10px;
+                        font-weight: bolder;
+                    }
+
+                    .playcount {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        color: #b3b3b3;
+                        font-size: 12px;
+                    }
+                }
+            }
+
+            .playlist-card:hover {
                 cursor: pointer;
                 background-color: #434242;
                 transition: .5s;

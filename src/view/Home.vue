@@ -1,9 +1,12 @@
 <template>
     <div class="home-container">
-        <div class="cards">
+        <div class="load">
+            <Loader :dsp="!topLists.init" />
+        </div>
+        <div class="cards" :style="!topLists.init ? 'display:none;' : ''">
             <Card class="card" v-for="(item, index) in topLists.data" v-bind="item" :key="index" />
         </div>
-        <button @click="testNootificationEvent">测试通知</button>
+        <!-- <button @click="testNootificationEvent">测试通知</button> -->
     </div>
 </template>
 
@@ -13,9 +16,11 @@ import { invoke } from "@tauri-apps/api";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/api/notification";
 import Card from '../components/Card.vue';
 import { useTopListStore } from "../stores/topList";
+import Loader from "../components/Loader.vue";
 
 const { topLists } = useTopListStore();
 
+// TEST
 async function testNootificationEvent() {
     console.log("testNootificationEvent");
     let permissionGranted = await isPermissionGranted();
@@ -67,6 +72,12 @@ onBeforeMount(async () => {
     width: 100%;
     height: 100%;
     margin-top: 60px;
+
+    .load {
+        position: absolute;
+        margin: auto;
+    }
+
     .cards {
         display: flex;
         flex-direction: row;

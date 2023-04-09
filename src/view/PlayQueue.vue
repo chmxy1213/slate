@@ -1,8 +1,11 @@
 <!-- 播放队列 -->
 <template>
     <div class="box">
-        <div class="item" v-for="(item, index) of store.list">
-            <MusicItem :id="index + 1" :info="item" @dblclick="dblclick(item)"/>
+        <h3 class="title">播放队列</h3>
+        <div class="items">
+            <div class="item" v-for="(item, index) of store.list">
+                <MusicItem :id="index + 1" :info="item" @dblclick="dblclick(item)" />
+            </div>
         </div>
     </div>
 </template>
@@ -25,21 +28,34 @@ async function dblclick(obj) {
 </script>
 
 <style scoped lang="less">
-    .box {
+.box {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    flex-grow: 1;
+    margin: 60px 10px 10px 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #121212;
+
+    .title {
+        font-size: 20px;
+        color: #fff;
+        margin-bottom: 10px;
+        padding: 5px;
+    }
+
+    .items {
         display: flex;
+        justify-content: center;
         align-items: center;
         flex-direction: column;
-        padding: 10px;
-        flex-grow: 1;
-        margin-top: 60px;
-        .bg-1 {
-            background-color: #000;
-        }
-        .bg-2 {
-            background-color: #000;
-        }
+        width: 100%;
+        padding: 5px;
+
         .item {
             width: 100%;
         }
     }
+}
 </style>

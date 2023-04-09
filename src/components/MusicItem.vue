@@ -139,7 +139,7 @@ onBeforeMount(() => {
 }
 
 .container-music-item:hover {
-    border-radius: 10px;
+    border-radius: 5px;
     background-color: #2a2a2a;
     cursor: pointer;
     opacity: 1;

@@ -74,7 +74,7 @@ pub async fn check(token: String) -> Result<CheckRes, String> {
         .build()
         .unwrap();
     let res = client.get(url).send().await.unwrap().text().await.unwrap();
-    
+
     println!("res: {}", res);
     let wrap: Result<CheckRes, serde_json::Error> = serde_json::from_str(res.as_str());
     match wrap {
@@ -157,7 +157,7 @@ pub async fn get_playlist_detail(id: u64) -> Result<PlaylistDetail, String> {
 
 /// Get the hot music list
 #[tauri::command]
-pub async fn get_hot_music_list(id: u64, limit: u8, offset: u8) -> Result<MusicJSON, String> {
+pub async fn get_hot_music_list(id: u64, limit: u64, offset: u64) -> Result<MusicJSON, String> {
     let url = format!(
         "http://localhost:3000/playlist/track/all?id={}&limit={}&offset={}",
         id, limit, offset
@@ -279,8 +279,8 @@ mod tests {
     #[test]
     fn test_get_hot_music_list() {
         let id: u64 = 19723756;
-        let limit: u8 = 10;
-        let offset: u8 = 0;
+        let limit: u64 = 10;
+        let offset: u64 = 0;
         let res = aw!(get_hot_music_list(id, limit, offset));
         println!("{:?}", res);
     }

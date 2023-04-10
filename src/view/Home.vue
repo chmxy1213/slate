@@ -42,14 +42,7 @@ async function init() {
             let res = await invoke("get_playlist_detail", { id: id });
             console.log(res);
             if (res.code === 200) {
-                let { id, name, description, coverImgUrl, playCount } = res.playlist;
-                topLists.data.push({
-                    id: id,
-                    name: name,
-                    description: description,
-                    coverImgUrl: coverImgUrl,
-                    playCount: playCount,
-                });
+                topLists.data.push(res.playlist);
             }
         });
         topLists.init = true;

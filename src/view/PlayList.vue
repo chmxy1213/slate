@@ -1,6 +1,6 @@
 <!-- 歌单组件 -->
 <template>
-    <div class="playlist-container">
+    <div class="playlist-container" @scroll="scrollEvent">
         <canvas id="canvas" style="display: none;"></canvas>
         <!-- 页面头 -->
         <div class="playlist-header">
@@ -50,7 +50,7 @@ const songs = ref([]);  // this is songs data, after process.
 async function get(limit, offset) {
     let res = await invoke("get_hot_music_list", { id: route.query.id * 1, limit, offset });
     if (res.code === 200) {
-        data.value.push(...res.songs);
+        data.value = res.songs;
     }
 }
 
@@ -95,7 +95,7 @@ function comClr() {
 
     // 获取像素数据
     let imageData = context.getImageData(0, 0, img.width, img.height).data;
-    
+
     let r = 1, g = 1, b = 1;
     // 取所有像素的平均值
     for (var row = 0; row < img.height; row++) {
@@ -127,6 +127,42 @@ function comClr() {
     document.getElementsByClassName("playlist-body")[0].style.background = `linear-gradient(rgba(${r}, ${g}, ${b}, 0.5), #121212)`;
 }
 
+// scroll debounce function
+function debounce(fn, delay) {
+    let timer = null;
+    return async function () {
+        let context = this;
+        let args = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(async function () {
+            await fn.apply(context, args);
+        }, delay);
+    }
+}
+async function task() {
+    console.log('exec!');
+    // Request data
+    // check if songs length is less than this top list's length
+    if (songs.value.length < thisTopList.value.trackCount) {
+        console.log(`before req, len: ${ songs.value.length}`);
+        await get(10, songs.value.length);
+        // Process data
+        processData();
+        console.log(`after req, len: ${ songs.value.length}`);
+    }
+};
+
+const handler = debounce(task, 1000);
+
+// scroll event
+async function scrollEvent(e) {
+    if (e.target.scrollTop + e.target.clientHeight >= e.target.scrollHeight) {
+        // 这里会执行多次，需要防抖
+        await handler();
+    }
+}
+
+
 onBeforeMount(async () => {
     // LOG
     console.log("Playlist.vue's log.");
@@ -140,8 +176,7 @@ onBeforeMount(async () => {
     await get(10, 0);
     // Process data
     processData();
-
-    // TEST
+    // coumpute image's theme color
     comClr();
 });
 </script>
@@ -153,6 +188,7 @@ onBeforeMount(async () => {
     width: 100%;
     height: 100%;
     margin-top: 60px;
+    overflow-y: scroll;
 
     .playlist-header {
         display: flex;
@@ -182,9 +218,11 @@ onBeforeMount(async () => {
                     font-weight: 900;
                 }
             }
+
             .playlist-description {
                 margin-top: 10px;
                 margin-bottom: 10px;
+
                 span {
                     display: inline-block;
                     font-size: 14px;

@@ -26,7 +26,7 @@
                     <i class="fa fa fa-play"></i>
                 </div>
             </div>
-            <Table :header="header" :data="songs" />
+            <Table :header="header" :data="songs" :event="dbPlayEvent" />
         </div>
     </div>
 </template>
@@ -37,8 +37,10 @@ import { invoke } from "@tauri-apps/api";
 import Table from "../components/table/Table.vue";
 import { useRoute } from "vue-router";
 import { useTopListStore } from "../stores/topList";
+import { usePlayListStore } from "../stores/playList";
 
 const { topLists } = useTopListStore();
+const { playlistState, add, remove, previous, next, playThis } = usePlayListStore();
 const route = useRoute();
 
 const thisTopList = ref({});
@@ -162,6 +164,11 @@ async function scrollEvent(e) {
     }
 }
 
+// double click play event
+async function dbPlayEvent(id) {
+    await add(id, 0);
+    await playThis(0);
+}
 
 onBeforeMount(async () => {
     // LOG

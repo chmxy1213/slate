@@ -145,7 +145,7 @@ const props = defineProps({
 async function addToQueue(id) {
     console.log("addToQueue");
     console.log(id);
-    await add(id);
+    await add(id, -1);
 }
 
 // TODO: 标记为喜欢的音乐

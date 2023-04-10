@@ -41,7 +41,7 @@ onBeforeMount(async () => {
 	initAudio();
 
 	ids.forEach(async (id) => {
-		await add(id);
+		await add(id, -1);
 	});
 
 	await listen("event-previous", (event) => {

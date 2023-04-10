@@ -1,10 +1,10 @@
 <!-- 表行 -->
 <template>
-    <div class="table-item-container" @dblclick="doubleClkEvent">
+    <div class="table-item-container" @dblclick="event(data.id)">
         <div class="block-one">
             <div class="index">
                 <span class="id">{{ id }}</span>
-                <span class="index-icon">
+                <span class="index-icon" @click="event(data.id)">
                     <i class="fa fa-play fa-play" />
                 </span>
             </div>
@@ -31,22 +31,13 @@
 
 <script setup>
 import { onBeforeMount } from 'vue';
-import { usePlayListStore } from '../../stores/playList';
-
-const { playlistState, add, remove, previous, next, playThis } = usePlayListStore();
 
 // data: [id, picUrl, name, artists, album, time]
 const props = defineProps({
     id: { type: Number, required: true },
     data: { type: Object, required: true },
+    event: { type: Function, required: true },
 });
-
-// double click to play
-function doubleClkEvent() {
-    add(props.data.id);
-
-    // playThis(playlistState.list.length - 1);
-}
 
 onBeforeMount(() => {
 });

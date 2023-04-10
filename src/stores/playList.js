@@ -25,13 +25,19 @@ export const usePlayListStore = defineStore("playList", () => {
     }
 
     // Add a new music id from music detail object in the playlist.
-    async function add(id) {
+    async function add(id, duration) {
         let res = await loadMusicDetail(id);
         let obj = {
             id,
             ...res
         };
-        playlistState.value.list.push(obj);
+        // 追加
+        if (duration == -1) {
+            playlistState.value.list.push(obj);
+        } else if (duration == 0) {
+            // 从头插入
+            playlistState.value.list.unshift(obj);
+        }
     }
 
     // Remove a music id from music detail object in the playlist.

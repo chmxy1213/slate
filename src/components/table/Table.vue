@@ -16,7 +16,7 @@
         <div class="line"></div>
         <div class="table-body">
             <div class="table-item" v-for="(item, index) in data">
-                <TableItem :id="index + 1" :data="item" :key="index" :event="event" />
+                <TableItem :id="index + 1" :data="item" :key="index" :events="events" />
             </div>
         </div>
     </div>
@@ -29,7 +29,7 @@ import TableItem from "./TableItem.vue";
 const props = defineProps({
     header: { type: Array, required: true },
     data: { type: Array, required: true },
-    event: { type: Function, required: true },
+    events: { type: Array, required: true },  // 事件列表 [play, like, addToQueue]
 });
 </script>
 

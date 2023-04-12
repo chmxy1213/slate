@@ -321,7 +321,6 @@ function like(id) {
                 }
 
                 .hover-icons {
-                    display: none;
                     position: absolute;
                     right: 50px;
                     top: 0;

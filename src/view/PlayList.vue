@@ -26,7 +26,7 @@
                     <i class="fa fa fa-play"></i>
                 </div>
             </div>
-            <Table :header="header" :data="songs" :event="dbPlayEvent" />
+            <Table :header="header" :data="songs" :events="[dbPlayEvent, likeEvent, addToQueueEvent]" />
         </div>
     </div>
 </template>
@@ -161,6 +161,19 @@ async function scrollEvent(e) {
 async function dbPlayEvent(id) {
     await add(id, 0);
     await playThis(0);
+}
+
+// like event
+function likeEvent(id) {
+    // TODO
+    console.log(`like ${id}`);
+}
+
+// add to queue event
+async function addToQueueEvent(id) {
+    // TODO
+    console.log(`add to queue ${id}`);
+    await add(id, -1);
 }
 
 onBeforeMount(async () => {

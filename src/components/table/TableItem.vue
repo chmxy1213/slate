@@ -1,10 +1,10 @@
 <!-- 表行 -->
 <template>
-    <div class="table-item-container" @dblclick="event(data.id)">
+    <div class="table-item-container" @dblclick="events[0]((data.id))">
         <div class="block-one">
             <div class="index">
                 <span class="id">{{ id }}</span>
-                <span class="index-icon" @click="event(data.id)">
+                <span class="index-icon" @click="events[0](data.id)">
                     <i class="fa fa-play fa-play" />
                 </span>
             </div>
@@ -26,21 +26,26 @@
         <div class="block-three">
             <p>{{ data.time }}</p>
         </div>
+        <!-- hover icons -->
+        <div class="hover-icons">
+            <div class="icon" @click="events[1](data.id)">
+                <font-awesome-icon :icon="['fas', 'heart']" style="color: #fff;" />
+            </div>
+            <div class="icon" @click="events[2](data.id)">
+                <font-awesome-icon :icon="['fas', 'plus']" />
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { onBeforeMount } from 'vue';
-
 // data: [id, picUrl, name, artists, album, time]
 const props = defineProps({
     id: { type: Number, required: true },
     data: { type: Object, required: true },
-    event: { type: Function, required: true },
+    events: { type: Array, required: true },
 });
 
-onBeforeMount(() => {
-});
 </script>
 
 <style scoped lang="less">
@@ -120,15 +125,24 @@ onBeforeMount(() => {
         justify-content: flex-end;
         margin: 2px;
     }
+
+    .hover-icons {
+        display: none;
+
+        .icon {
+            display: none;
+        }
+    }
 }
 
 .table-item-container:hover {
+    position: relative;
     border-radius: 10px;
     background-color: #2a2a2a;
     cursor: pointer;
     opacity: 1;
     color: #fff;
-    
+
     .block-one {
         .index {
             .id {
@@ -138,6 +152,27 @@ onBeforeMount(() => {
             .index-icon {
                 display: inline !important;
             }
+        }
+    }
+
+    .hover-icons {
+        position: absolute;
+        right: 50px;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            width: 25px;
+            height: 25px;
+            margin: 0px 5px 0px 5px;
         }
     }
 }

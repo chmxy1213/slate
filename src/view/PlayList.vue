@@ -39,9 +39,12 @@ import { useRoute } from "vue-router";
 import { useTopListStore } from "../stores/topList";
 import { usePlayQueueStore } from "../stores/playQueue";
 import { debounceAsync } from "../tools/debounce";
+import { usePlayListStore } from "../stores/playList";
 
 const { topLists } = useTopListStore();
 const { playQueueState, add, remove, previous, next, playThis } = usePlayQueueStore();
+const { playListData } = usePlayListStore(); 
+
 const route = useRoute();
 
 const thisTopList = ref({});
@@ -169,12 +172,28 @@ onBeforeMount(async () => {
             thisTopList.value = value;
         }
     });
-    // Request data
-    await get(10, 0);
-    // Process data
-    processData();
-    // coumpute image's theme color
-    comClr();
+    let hitPlayListData = false;
+    playListData.forEach((value) => {
+        if (value.id == route.query.id) {
+            songs.value = value.items;
+            hitPlayListData = true;
+        }
+    });
+    if (!hitPlayListData) {
+        playListData.push({
+            id: route.query.id,
+            items: [],
+        });
+        songs.value = playListData[playListData.length - 1].items;
+    }
+    if (!hitPlayListData || songs.value.length == 0) {
+        // Request data
+        await get(10, 0);
+        // Process data
+        processData();
+    }
+    // BUG coumpute image's theme color
+    // comClr();
 });
 </script>
 

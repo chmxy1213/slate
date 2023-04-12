@@ -3,10 +3,10 @@ import { ref } from "vue";
 import { useMusicStore } from "./music"
 import { reqMusicDetail, reqMusicSource } from "../tools/req";
 
-export const usePlayListStore = defineStore("playList", () => {
+export const usePlayQueueStore = defineStore("playQueue", () => {
     const { music, load, play, pause } = useMusicStore();
 
-    const playlistState = ref({
+    const playQueueState = ref({
         // list of music id.
         // The list of content items is music detail object.
         list: [],
@@ -24,7 +24,7 @@ export const usePlayListStore = defineStore("playList", () => {
         };
     }
 
-    // Add a new music id from music detail object in the playlist.
+    // Add a new music id from music detail object in the play queue.
     async function add(id, duration) {
         let res = await loadMusicDetail(id);
         let obj = {
@@ -33,44 +33,44 @@ export const usePlayListStore = defineStore("playList", () => {
         };
         // 追加
         if (duration == -1) {
-            playlistState.value.list.push(obj);
+            playQueueState.value.list.push(obj);
         } else if (duration == 0) {
             // 从头插入
-            playlistState.value.list.unshift(obj);
+            playQueueState.value.list.unshift(obj);
         }
     }
 
-    // Remove a music id from music detail object in the playlist.
+    // Remove a music id from music detail object in the play queue.
     function remove(id) {
-        playlistState.value.list = playlistState.value.list.filter(item => item.id !== id);
+        playQueueState.value.list = playQueueState.value.list.filter(item => item.id !== id);
     }
 
     // play previous music.
     async function previous() {
-        if (playlistState.value.idx <= 0) {
+        if (playQueueState.value.idx <= 0) {
             return;
         }
-        playlistState.value.idx--;
-        await load(playlistState.value.list[playlistState.value.idx]);
+        playQueueState.value.idx--;
+        await load(playQueueState.value.list[playQueueState.value.idx]);
         play();
     }
 
     // play next music.
     async function next() {
-        if (playlistState.value.idx >= playlistState.value.list.length) {
+        if (playQueueState.value.idx >= playQueueState.value.list.length) {
             return;
         }
-        playlistState.value.idx++;
-        await load(playlistState.value.list[playlistState.value.idx]);
+        playQueueState.value.idx++;
+        await load(playQueueState.value.list[playQueueState.value.idx]);
         play();
     }
 
     // Play music by index.
     async function playThis(index) {
-        playlistState.value.idx = index;
-        await load(playlistState.value.list[playlistState.value.idx]);
+        playQueueState.value.idx = index;
+        await load(playQueueState.value.list[playQueueState.value.idx]);
         play();
     }
 
-    return { playlistState, add, remove, previous, next, playThis };
+    return { playQueueState, add, remove, previous, next, playThis };
 });

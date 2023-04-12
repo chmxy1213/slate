@@ -22,10 +22,10 @@ import "../assets/css/base.css";
 import Menus from "../components/Menus.vue";
 import Player from "../components/Player.vue";
 import { useMusicStore } from "../stores/music";
-import { usePlayListStore } from "../stores/playList";
+import { usePlayQueueStore } from "../stores/playQueue";
 
 const { music, load, play, pause, initAudio } = useMusicStore();
-const { playlistState, previous, next, add, remove } = usePlayListStore();
+const { playQueueState, previous, next, add, remove } = usePlayQueueStore();
 
 let ids = [28731108, 34274470, 65533, 65528, 1974443814, 65536, 28563317, 65538];
 

@@ -13,11 +13,11 @@
 <script setup>
 import { ref } from "vue";
 import MusicItem from "../components/MusicItem.vue";
-import { usePlayListStore } from "../stores/playList";
+import { usePlayQueueStore } from "../stores/playQueue";
 import { useMusicStore } from "../stores/music";
 
 const { load, play } = useMusicStore();
-const { playlistState: store } = usePlayListStore();
+const { playQueueState: store } = usePlayQueueStore();
 
 // Click item play music event.
 async function dblclick(obj) {

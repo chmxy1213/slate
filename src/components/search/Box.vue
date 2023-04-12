@@ -123,9 +123,9 @@
 </template>
 
 <script setup>
-import { usePlayListStore } from "../../stores/playList";
+import { usePlayQueueStore } from "../../stores/playQueue";
 
-const { playlistState, add, remove, previous, next, playThis } = usePlayListStore();
+const { playQueueState, add, remove, previous, next, playThis } = usePlayQueueStore();
 
 const header = ["#", "标题", "专辑", "时长"];
 const props = defineProps({

@@ -37,10 +37,11 @@ import { invoke } from "@tauri-apps/api";
 import Table from "../components/table/Table.vue";
 import { useRoute } from "vue-router";
 import { useTopListStore } from "../stores/topList";
-import { usePlayListStore } from "../stores/playList";
+import { usePlayQueueStore } from "../stores/playQueue";
+import { debounceAsync } from "../tools/debounce";
 
 const { topLists } = useTopListStore();
-const { playlistState, add, remove, previous, next, playThis } = usePlayListStore();
+const { playQueueState, add, remove, previous, next, playThis } = usePlayQueueStore();
 const route = useRoute();
 
 const thisTopList = ref({});
@@ -129,18 +130,7 @@ function comClr() {
     document.getElementsByClassName("playlist-body")[0].style.background = `linear-gradient(rgba(${r}, ${g}, ${b}, 0.5), #121212)`;
 }
 
-// scroll debounce function
-function debounce(fn, delay) {
-    let timer = null;
-    return async function () {
-        let context = this;
-        let args = arguments;
-        clearTimeout(timer);
-        timer = setTimeout(async function () {
-            await fn.apply(context, args);
-        }, delay);
-    }
-}
+// scroll to bottom task
 async function task() {
     console.log('exec!');
     // Request data
@@ -154,7 +144,7 @@ async function task() {
     }
 };
 
-const handler = debounce(task, 1000);
+const handler = debounceAsync(task, 1000);
 
 // scroll event
 async function scrollEvent(e) {

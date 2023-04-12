@@ -67,11 +67,11 @@ import { onBeforeMount, onMounted, ref, watch } from "vue";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useRouter } from "vue-router";
 import { useMusicStore } from "../stores/music.js";
-import { usePlayListStore } from "../stores/playList";
+import { usePlayQueueStore } from "../stores/playQueue";
 
 const router = useRouter();
 const { music, load, play, pause } = useMusicStore();
-const { playlistState, previous, next } = usePlayListStore();
+const { playQueueState, previous, next } = usePlayQueueStore();
 
 // 播放栏状态
 const playState = ref({

@@ -13,10 +13,14 @@
             </div>
             <div class="info">
                 <div class="name">
-                    <p>{{ data.name }}</p>
+                    <!-- Check length -->
+                    <p v-if="data.name.length > 20">{{ data.name.slice(0, 20) + "..." }}</p>
+                    <p v-else>{{ data.name }}</p>
                 </div>
                 <div class="artists">
-                    <p>{{ data.artists }}</p>
+                    <!-- Check length -->
+                    <p v-if="data.artists.length > 20">{{ data.artists.slice(0, 20) + "..." }}</p>
+                    <p v-else>{{ data.artists }}</p>
                 </div>
             </div>
         </div>

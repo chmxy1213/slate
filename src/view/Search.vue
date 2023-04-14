@@ -4,7 +4,8 @@
             <label for="search" class="label">
                 <font-awesome-icon class="icon" :icon="['fas', 'magnifying-glass']" />
             </label>
-            <input id="search" type="text" placeholder="想听什么？" @keyup.enter="searcheEvent" v-model="searchStore.keyword">
+            <input id="search" type="text" placeholder="想听什么？" @keyup.enter="searcheEvent" v-model="searchStore.keyword"
+                @focus="inputFocusEvent">
         </div>
         <div class="search-label">
             <span :class="{ 'selected': searchStore.typeIdx == index }" v-for="(item, index) in searchTypes" :key="index"
@@ -150,6 +151,11 @@ async function labelClickEvent(index) {
             }
             break;
     }
+}
+
+// input 获取焦点时，选中文本
+function inputFocusEvent(event) {
+    event.target.select();
 }
 
 onBeforeMount(() => {

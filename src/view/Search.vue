@@ -42,7 +42,7 @@ function processData(songs) {
         // Process artists
         let ars = "";  // Artist String
         value.ar.forEach((value) => {
-            ars += `${value.name}`;
+            ars += `, ${value.name}`;
         });
         ars = ars.replace(/^(\s|,)+|(\s|,)+$/g, '');
         // Process duration

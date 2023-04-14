@@ -1,5 +1,5 @@
 <template>
-    <div class="search-container">
+    <div class="search-container" @scroll="scrollEvent">
         <div class="search-input">
             <label for="search" class="label">
                 <font-awesome-icon class="icon" :icon="['fas', 'magnifying-glass']" />
@@ -8,7 +8,7 @@
         </div>
         <div class="search-label">
             <span :class="{ 'selected': searchStore.typeIdx == index }" v-for="(item, index) in searchTypes" :key="index"
-                @click="searchStore.typeIdx = index">{{ item.type }}</span>
+                @click="labelClickEvent(index)">{{ item.type }}</span>
         </div>
         <div class="search-res">
             <!-- 加载动画 -->
@@ -26,6 +26,7 @@ import { invoke } from "@tauri-apps/api";
 import { useSearchStore } from "../stores/search";
 import Box from "../components/search/Box.vue";
 import Loader from "../components/Loader.vue";
+import { debounceAsync } from "../tools/debounce";
 
 const { searchStore, searchTypes } = useSearchStore();
 
@@ -62,33 +63,93 @@ function processData(songs) {
     return tmp;
 }
 
+// Request data and process data
+async function get(limit, offset) {
+    let res = await invoke("search", {
+        tp: searchTypes[searchStore.typeIdx].id,
+        keyword: searchStore.keyword,
+        limit: limit,
+        offset: offset
+    });
+
+    // TODO
+    if (searchTypes[searchStore.typeIdx].id == 1) {
+        searchStore.data.songs.push(...processData(res.Song.result.songs));
+    } else if (searchTypes[searchStore.typeIdx].id == 10) {
+        searchStore.data.albums.push(...res.Album.result.albums);
+    } else if (searchTypes[searchStore.typeIdx].id == 100) {
+        searchStore.data.artists.push(...res.Artist.result.artists);
+    } else if (searchTypes[searchStore.typeIdx].id == 1000) {
+        searchStore.data.playlists.push(...res.Playlist.result.playlists);
+    }
+}
+
 // Search event
 async function searcheEvent() {
     if (searchStore.keyword == "") {
         console.log("搜索关键字不能为空");
         return;
     }
+
+    searchStore.data.songs = [];
+    searchStore.data.albums = [];
+    searchStore.data.artists = [];
+    searchStore.data.playlists = [];
+
     resState.value = 0;
-    let res = await invoke("search", {
-        tp: searchTypes[searchStore.typeIdx].id,
-        keyword: searchStore.keyword,
-        limit: 30,
-        offset: 0
-    });
-    console.log(res);
-
-    // TODO
-    if (searchTypes[searchStore.typeIdx].id == 1) {
-        searchStore.data.songs = processData(res.Song.result.songs);
-    } else if (searchTypes[searchStore.typeIdx].id == 10) {
-        searchStore.data.albums = res.Album.result.albums;
-    } else if (searchTypes[searchStore.typeIdx].id == 100) {
-        searchStore.data.artists = res.Artist.result.artists;
-    } else if (searchTypes[searchStore.typeIdx].id == 1000) {
-        searchStore.data.playlists = res.Playlist.result.playlists;
-    }
-
+    await get(30, 0);
     resState.value = 1;
+}
+
+// scroll event
+const scrollHandler = debounceAsync(async function (event) {
+    // Check if the scroll is at the bottom
+    if (event.target.scrollTop + event.target.clientHeight >= event.target.scrollHeight) {
+        // request more data
+        get(30, searchStore.data.songs.length)
+    }
+}, 1000);
+async function scrollEvent(event) {
+    await scrollHandler(event);
+}
+
+// label click event
+async function labelClickEvent(index) {
+    searchStore.typeIdx = index;
+    switch (index) {
+        case 0:
+            console.log("0");
+            if (searchStore.data.songs.length == 0) {
+                resState.value = 0;
+                await get(30, 0);
+                resState.value = 1;
+            }
+            break;
+        case 1:
+            console.log("1");
+            if (searchStore.data.albums.length == 0) {
+                resState.value = 0;
+                await get(30, 0);
+                resState.value = 1;
+            }
+            break;
+        case 2:
+            console.log("2");
+            if (searchStore.data.artists.length == 0) {
+                resState.value = 0;
+                await get(30, 0);
+                resState.value = 1;
+            }
+            break;
+        case 3:
+            console.log("3");
+            if (searchStore.data.playlists.length == 0) {
+                resState.value = 0;
+                await get(30, 0);
+                resState.value = 1;
+            }
+            break;
+    }
 }
 
 onBeforeMount(() => {
@@ -106,6 +167,7 @@ onBeforeMount(() => {
     width: 100%;
     height: 100%;
     margin-top: 60px;
+    overflow-y: scroll;
 
     .search-input {
         display: flex;

@@ -62,7 +62,6 @@
         </div>
         <!-- 专辑 -->
         <div class="box-inner" v-else-if="props.searchType == 10">
-            <!-- <div>专辑</div> -->
             <div class="inner-albums-container">
                 <div class="album-card" v-for="item in props.data.albums" :key="item.id">
                     <div class="cover">
@@ -89,8 +88,9 @@
                     </div>
                     <div class="info">
                         <div class="name">
-                            <span v-if="item.name.length >= 10">{{ item.name.slice(0, 9) + '...' }}</span>
-                            <span v-else>{{ item.name }}</span>
+                            <!-- <span v-if="item.name.length >= 10">{{ item.name.slice(0, 9) + '...' }}</span> -->
+                            <!-- <span v-else>{{ item.name }}</span> -->
+                            <span>{{ item.name }}</span>
                         </div>
                     </div>
                 </div>
@@ -123,6 +123,7 @@
 </template>
 
 <script setup>
+import { onBeforeMount, onBeforeUpdate } from "vue";
 import { usePlayQueueStore } from "../../stores/playQueue";
 
 const { playQueueState, add, remove, previous, next, playThis } = usePlayQueueStore();

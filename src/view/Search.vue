@@ -4,7 +4,7 @@
             <label for="search" class="label">
                 <font-awesome-icon class="icon" :icon="['fas', 'magnifying-glass']" />
             </label>
-            <input id="search" type="text" placeholder="想听什么？" @keyup.enter="searcheEvent" v-model="keyword"
+            <input id="search" type="text" placeholder="想听什么？" @keyup.enter="searcheEvent" v-model.trim="keyword"
                 @focus="inputFocusEvent">
         </div>
         <div class="search-label">
@@ -121,6 +121,9 @@ async function scrollEvent(event) {
 // label click event
 async function labelClickEvent(index) {
     searchStore.typeIdx = index;
+    if (keyword.value == "") {
+        return;
+    }
     switch (index) {
         case 0:
             console.log("0");
@@ -155,6 +158,7 @@ async function labelClickEvent(index) {
             }
             break;
     }
+    console.log(searchStore.data);
 }
 
 // input 获取焦点时，选中文本

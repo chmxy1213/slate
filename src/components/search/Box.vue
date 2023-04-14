@@ -32,10 +32,12 @@
                                 </div>
                                 <div class="info">
                                     <div class="name">
-                                        <p>{{ item.name }}</p>
+                                        <p v-if="item.name.length > 20">{{ item.name.slice(0, 20) + '...' }}</p>
+                                        <p v-else>{{ item.name }}</p>
                                     </div>
                                     <div class="artists">
-                                        <p>{{ item.artists }}</p>
+                                        <p v-if="item.artists.length > 20">{{ item.artists.slice(0, 20) + '...' }}</p>
+                                        <p v-else>{{ item.artists }}</p>
                                     </div>
                                 </div>
                             </div>

@@ -2,7 +2,7 @@
 <template>
     <div class="res-box">
         <!-- 单曲 -->
-        <div class="box-inner" v-if="props.searchType == 1">
+        <div class="box-inner" v-show="props.searchType == 1">
             <div class="inner-table-container">
                 <div class="table-title">
                     <div class="title-one">
@@ -62,7 +62,7 @@
             </div>
         </div>
         <!-- 专辑 -->
-        <div class="box-inner" v-else-if="props.searchType == 10">
+        <div class="box-inner" v-show="props.searchType == 10">
             <div class="inner-albums-container">
                 <div class="album-card" v-for="item in props.data.albums" :key="item.id">
                     <div class="cover">
@@ -81,7 +81,7 @@
             </div>
         </div>
         <!-- 歌手 -->
-        <div class="box-inner" v-else-if="props.searchType == 100">
+        <div class="box-inner" v-show="props.searchType == 100">
             <div class="inner-artist-container">
                 <div class="artist-card" v-for="item in props.data.artists" :key="item.id">
                     <div class="cover">
@@ -98,7 +98,7 @@
             </div>
         </div>
         <!-- 歌单 -->
-        <div class="box-inner" v-else-if="props.searchType == 1000">
+        <div class="box-inner" v-show="props.searchType == 1000">
             <div class="inner-playlist-container">
                 <div class="playlist-card" v-for="item in props.data.playlists" :key="item.id">
                     <div class="cover">

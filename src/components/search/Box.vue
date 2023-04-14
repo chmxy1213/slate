@@ -3,7 +3,6 @@
     <div class="res-box">
         <!-- 单曲 -->
         <div class="box-inner" v-if="props.searchType == 1">
-            <!-- <Table :header="header" :data="props.data"/> -->
             <div class="inner-table-container">
                 <div class="table-title">
                     <div class="title-one">
@@ -20,7 +19,7 @@
                 <div class="line"></div>
                 <div class="table-body">
                     <div class="table-item" v-for="(item, index) in props.data.songs" :key="index">
-                        <div class="table-item-container" @dblclick="doubleClkEvent">
+                        <div class="table-item-container" @dblclick="doubleClkEvent(item.id)">
                             <div class="block-one">
                                 <div class="index">
                                     <span class="id">{{ index + 1 }}</span>
@@ -141,6 +140,12 @@ const props = defineProps({
         required: true,
     },
 });
+
+// 双击歌曲播放
+async function doubleClkEvent(id) {
+    await add(id, 0);
+    await playThis(0);
+}
 
 // 添加到播放队列
 async function addToQueue(id) {

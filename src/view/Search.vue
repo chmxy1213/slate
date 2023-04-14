@@ -4,7 +4,7 @@
             <label for="search" class="label">
                 <font-awesome-icon class="icon" :icon="['fas', 'magnifying-glass']" />
             </label>
-            <input id="search" type="text" placeholder="想听什么？" @keyup.enter="searcheEvent" v-model="searchStore.keyword"
+            <input id="search" type="text" placeholder="想听什么？" @keyup.enter="searcheEvent" v-model="keyword"
                 @focus="inputFocusEvent">
         </div>
         <div class="search-label">
@@ -33,6 +33,8 @@ const { searchStore, searchTypes } = useSearchStore();
 
 // result have three state: loading, success, null map to 0, 1, 2
 const resState = ref(2);
+
+const keyword = ref("");
 
 // TODO: this fucntion is some same with `req.js` and `Playlist.vue`.
 // process the request's data
@@ -68,7 +70,7 @@ function processData(songs) {
 async function get(limit, offset) {
     let res = await invoke("search", {
         tp: searchTypes[searchStore.typeIdx].id,
-        keyword: searchStore.keyword,
+        keyword: keyword.value,
         limit: limit,
         offset: offset
     });
@@ -87,15 +89,17 @@ async function get(limit, offset) {
 
 // Search event
 async function searcheEvent() {
-    if (searchStore.keyword == "") {
+    if (keyword.value == "") {
         console.log("搜索关键字不能为空");
         return;
     }
-
-    searchStore.data.songs = [];
-    searchStore.data.albums = [];
-    searchStore.data.artists = [];
-    searchStore.data.playlists = [];
+    if (keyword.value != searchStore.keyword) {
+        searchStore.data.songs = [];
+        searchStore.data.albums = [];
+        searchStore.data.artists = [];
+        searchStore.data.playlists = [];
+        searchStore.keyword = keyword.value;
+    }
 
     resState.value = 0;
     await get(30, 0);
@@ -160,9 +164,9 @@ function inputFocusEvent(event) {
 
 onBeforeMount(() => {
     console.log('搜索 log');
-    if (searchStore.keyword != "") {
-        resState.value = 1;
-    }
+    // if (searchStore.keyword != "") {
+    //     resState.value = 1;
+    // }
 });
 </script>
 

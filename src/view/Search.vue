@@ -168,9 +168,10 @@ function inputFocusEvent(event) {
 
 onBeforeMount(() => {
     console.log('搜索 log');
-    // if (searchStore.keyword != "") {
-    //     resState.value = 1;
-    // }
+    keyword.value = searchStore.keyword;
+    if (keyword.value != "") {
+        resState.value = 1;
+    }
 });
 </script>
 

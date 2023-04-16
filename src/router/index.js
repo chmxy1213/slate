@@ -43,6 +43,12 @@ const router = createRouter({
 					name: "playlist",
 					component: () => import("../view/Playlist.vue"),
 				},
+				{
+					// 专辑
+					path: "album",
+					name: "album",
+					component: () => import("../view/Album.vue"),
+				},
 			]
 		},
 	]

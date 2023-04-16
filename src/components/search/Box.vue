@@ -64,7 +64,7 @@
         <!-- 专辑 -->
         <div class="box-inner" v-show="props.searchType == 10">
             <div class="inner-albums-container">
-                <div class="album-card" v-for="item in props.data.albums" :key="item.id">
+                <div class="album-card" v-for="item in props.data.albums" :key="item.id" @click="router.push({name: 'album', query: {id: item.id}})">
                     <div class="cover">
                         <img :src="item.picUrl">
                     </div>
@@ -126,7 +126,9 @@
 <script setup>
 import { onBeforeMount, onBeforeUpdate } from "vue";
 import { usePlayQueueStore } from "../../stores/playQueue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const { playQueueState, add, remove, previous, next, playThis } = usePlayQueueStore();
 
 const header = ["#", "标题", "专辑", "时长"];

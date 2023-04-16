@@ -12,11 +12,12 @@
                     <p>{{ data.album.name }}</p>
                 </div>
                 <div class="album-description">
-                    <span v-if="data.album.description.length > 100">{{ data.album.description.slice(0, 100) + '...' }}</span>
+                    <span v-if="data.album.description.length > 100">{{ data.album.description.slice(0, 100) + '...'
+                    }}</span>
                     <span v-else>{{ data.album.description }}</span>
                 </div>
                 <div class="album-publishtime">
-                    <p>发布时间&nbsp;{{ data.album.publishTime }}</p>
+                    <p>发布时间&nbsp;{{ timestampToTime(data.album.publishTime) }}</p>
                 </div>
             </div>
         </div>
@@ -51,12 +52,12 @@
                                 <div class="info">
                                     <div class="name">
                                         <!-- Check length -->
-                                        <p v-if="item.name.length > 20">{{ data.name.slice(0, 20) + "..." }}</p>
+                                        <p v-if="item.name.length > 30">{{ item.name.slice(0, 20) + '...' }}</p>
                                         <p v-else>{{ item.name }}</p>
                                     </div>
                                     <div class="artists">
                                         <!-- Check length -->
-                                        <p v-if="item.artists.length > 20">{{ data.artists.slice(0, 20) + "..." }}</p>
+                                        <p v-if="item.artists.length > 20">{{ item.artists.slice(0, 20) + '...' }}</p>
                                         <p v-else>{{ item.artists }}</p>
                                     </div>
                                 </div>
@@ -103,6 +104,18 @@ const data = ref({
     },
 });
 const songs = ref([]);
+
+// transition input timestamp to date string.(YYYY-MM-DD)
+function timestampToTime(timestamp) {
+    let date = new Date(timestamp);
+    let Y = date.getFullYear() + "-";
+    let M =
+        (date.getMonth() + 1 < 10
+            ? "0" + (date.getMonth() + 1)
+            : date.getMonth() + 1) + "-";
+    let D = date.getDate() + " ";
+    return Y + M + D;
+}
 
 // double click play event
 async function dbPlayEvent(id) {

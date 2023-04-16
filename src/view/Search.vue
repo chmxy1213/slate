@@ -124,9 +124,15 @@ async function labelClickEvent(index) {
     if (keyword.value == "") {
         return;
     }
+    if (searchStore.keyword != keyword.value) {
+        searchStore.keyword = keyword.value;
+        searchStore.data.songs = [];
+        searchStore.data.albums = [];
+        searchStore.data.artists = [];
+        searchStore.data.playlists = [];
+    }
     switch (index) {
         case 0:
-            console.log("0");
             if (searchStore.data.songs.length == 0) {
                 resState.value = 0;
                 await get(30, 0);
@@ -134,7 +140,6 @@ async function labelClickEvent(index) {
             }
             break;
         case 1:
-            console.log("1");
             if (searchStore.data.albums.length == 0) {
                 resState.value = 0;
                 await get(30, 0);
@@ -142,7 +147,6 @@ async function labelClickEvent(index) {
             }
             break;
         case 2:
-            console.log("2");
             if (searchStore.data.artists.length == 0) {
                 resState.value = 0;
                 await get(30, 0);
@@ -150,7 +154,6 @@ async function labelClickEvent(index) {
             }
             break;
         case 3:
-            console.log("3");
             if (searchStore.data.playlists.length == 0) {
                 resState.value = 0;
                 await get(30, 0);
@@ -158,7 +161,6 @@ async function labelClickEvent(index) {
             }
             break;
     }
-    console.log(searchStore.data);
 }
 
 // input 获取焦点时，选中文本

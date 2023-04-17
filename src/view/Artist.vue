@@ -103,7 +103,6 @@
 import { ref, onBeforeMount, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { usePlayQueueStore } from "../stores/playQueue";
-import { debounceAsync } from "../tools/debounce";
 import { invoke } from "@tauri-apps/api";
 
 const { add, playThis } = usePlayQueueStore();
@@ -205,8 +204,9 @@ onBeforeMount(async () => {
     flex-direction: column;
     width: 100%;
     height: 100%;
-    margin-top: 60px;
-    overflow-y: scroll;
+    //TODO: 优化滚动条和导航栏
+    // margin-top: 60px;
+    // overflow-y: scroll;
 
     .artist-header {
         position: relative;

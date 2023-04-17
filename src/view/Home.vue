@@ -64,7 +64,6 @@ onBeforeMount(async () => {
     flex-direction: column;
     width: 100%;
     height: 100%;
-    margin-top: 60px;
 
     .load {
         position: absolute;

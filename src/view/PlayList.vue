@@ -1,6 +1,6 @@
 <!-- 歌单组件 -->
 <template>
-    <div class="playlist-container" @scroll="scrollEvent">
+    <div class="playlist-container">
         <canvas id="canvas" style="display: none;"></canvas>
         <!-- 页面头 -->
         <div class="playlist-header">
@@ -32,18 +32,20 @@
 </template>
 
 <script setup>
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref, watch } from "vue";
 import { invoke } from "@tauri-apps/api";
 import Table from "../components/table/Table.vue";
 import { useRoute } from "vue-router";
 import { useTopListStore } from "../stores/topList";
 import { usePlayQueueStore } from "../stores/playQueue";
-import { debounceAsync } from "../tools/debounce";
 import { usePlayListStore } from "../stores/playList";
+import { useSysStore } from "../stores/sys";
+import { storeToRefs } from "pinia";
 
 const { topLists } = useTopListStore();
 const { playQueueState, add, remove, previous, next, playThis } = usePlayQueueStore();
 const { playListData } = usePlayListStore(); 
+const { scrollToBottom } = storeToRefs(useSysStore());
 
 const route = useRoute();
 
@@ -135,27 +137,21 @@ function comClr() {
 
 // scroll to bottom task
 async function task() {
-    console.log('exec!');
     // Request data
     // check if songs length is less than this top list's length
     if (songs.value.length < thisTopList.value.trackCount) {
-        console.log(`before req, len: ${ songs.value.length}`);
         await get(10, songs.value.length);
         // Process data
         processData();
-        console.log(`after req, len: ${ songs.value.length}`);
     }
 };
 
-const handler = debounceAsync(task, 1000);
-
-// scroll event
-async function scrollEvent(e) {
-    if (e.target.scrollTop + e.target.clientHeight >= e.target.scrollHeight) {
-        // 这里会执行多次，需要防抖
-        await handler();
+watch(scrollToBottom, async (val, oldval) => {
+    if (val == true && oldval == false) {
+        await task();
     }
-}
+});
+
 
 // double click play event
 async function dbPlayEvent(id) {
@@ -216,8 +212,6 @@ onBeforeMount(async () => {
     flex-direction: column;
     width: 100%;
     height: 100%;
-    margin-top: 60px;
-    overflow-y: scroll;
 
     .playlist-header {
         display: flex;

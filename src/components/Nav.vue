@@ -1,13 +1,13 @@
 <template>
-    <nav class="nav">
-        <div @click="() => router.back()" title="返回">
+    <header class="nav">
+        <div class="nav-item" @click="() => router.back()" title="返回">
             <i class="fa fa-angle-left"></i>
         </div>
-        <div @click="() => router.forward()" title="前进">
+        <div class="nav-item" @click="() => router.forward()" title="前进">
             <i class="fa fa-angle-right"></i>
         </div>
         <a href="javascript:;">{{ user.nickname }}</a>
-    </nav>
+    </header>
 </template>
 
 <script setup>
@@ -20,16 +20,22 @@ const router = useRouter();
 
 <style scoped lang="less">
 .nav {
-    position: absolute;
-    width: 100vh;
+    position: sticky;
+    width: 100%;
+    z-index: 999;
     top: 0;
-    z-index: 1;
+    padding: 10px 0;
     display: flex;
     flex-grow: 0;
-    margin-top: 10px;
     align-items: center;
-    
-    div {
+    background-color: rgba(14, 14, 14, 0.1);
+    // background-size: 4px 4px;
+    // background-image: radial-gradient(transparent 1px, #141414 1px);
+    backdrop-filter: saturate(50%) blur(6px);
+    border-bottom: 1px solid #141414;
+
+    .nav-item {
+        z-index: 2;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -37,7 +43,6 @@ const router = useRouter();
         width: 35px;
         height: 35px;
         border-radius: 50%;
-        background-color: #050505;
         cursor: pointer;
 
         i {

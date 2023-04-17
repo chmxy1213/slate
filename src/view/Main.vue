@@ -3,7 +3,7 @@
 		<div class="menus">
 			<Menus />
 		</div>
-		<div class="body">
+		<div class="body" @scroll="scrollEvent">
 			<Nav />
 			<RouterView class="box" />
 		</div>
@@ -23,11 +23,29 @@ import Menus from "../components/Menus.vue";
 import Player from "../components/Player.vue";
 import { useMusicStore } from "../stores/music";
 import { usePlayQueueStore } from "../stores/playQueue";
+import { debounceAsync } from "../tools/debounce";
+import { useSysStore } from "../stores/sys"
 
 const { music, load, play, pause, initAudio } = useMusicStore();
 const { playQueueState, previous, next, add, remove } = usePlayQueueStore();
+const { scrollToBottom, change } = useSysStore();
+// const sysStore = useSysStore();
 
 let ids = [28731108, 34274470, 65533, 65528, 1974443814, 65536, 28563317, 65538];
+
+// scroll event
+const scrollHandler = debounceAsync(async function (event) {
+    // Check if the scroll is at the bottom
+    if (event.target.scrollTop + event.target.clientHeight >= event.target.scrollHeight) {
+        change(true);
+		setTimeout(() => {
+			change(false);
+		}, 500);
+    } 
+}, 500);
+async function scrollEvent(event) {
+    await scrollHandler(event);
+}
 
 onBeforeMount(async () => {
 	// check service
@@ -84,7 +102,7 @@ onBeforeMount(async () => {
 		grid-column-end: 20;
 		grid-row-start: 1;
 		grid-row-end: 35;
-		background-color: #000000;
+		// background-color: #000000;
 		overflow: auto;
 		display: flex;
 		flex-direction: column;

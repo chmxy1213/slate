@@ -1,5 +1,7 @@
 use reqwest::header;
 
+use crate::models::album::AlbumDetail;
+use crate::models::artist::ArtistCommonInfo;
 use crate::models::check_res::CheckRes;
 use crate::models::login::{LoginReq, LoginRes};
 use crate::models::music::MusicJSON;
@@ -209,6 +211,31 @@ pub async fn search(
     }
 }
 
+#[tauri::command]
+pub async fn get_album_detail(id: u64) -> Result<AlbumDetail, String> {
+    let url = format!("http://localhost:3000/album?id={}", id);
+    let resp = reqwest::get(url)
+        .await
+        .unwrap()
+        .json::<AlbumDetail>()
+        .await
+        .unwrap();
+    Ok(resp)
+}
+
+#[tauri::command]
+pub async fn get_artist_common_detail(id: u64) -> Result<ArtistCommonInfo, String> {
+    let url = format!("http://localhost:3000/artists?id={}", id);
+    let resp = reqwest::get(url)
+        .await
+        .unwrap()
+        .json::<ArtistCommonInfo>()
+        .await
+        .unwrap();
+
+    Ok(resp)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -322,6 +349,20 @@ mod tests {
         let limit: u64 = 10;
         let offset: u64 = 0;
         let res = aw!(search(tp, keyword, limit, offset));
+        println!("{:?}", res);
+    }
+
+    #[test]
+    fn test_get_album_detail() {
+        let id: u64 = 32311;
+        let res = aw!(get_album_detail(id));
+        println!("{:?}", res);
+    }
+
+    #[test]
+    fn test_get_artist_common_detail() {
+        let id: u64 = 12138269;
+        let res = aw!(get_artist_common_detail(id));
         println!("{:?}", res);
     }
 }

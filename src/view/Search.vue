@@ -22,14 +22,19 @@
 </template>
 
 <script setup>
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref, watch } from "vue";
 import { invoke } from "@tauri-apps/api";
 import { useSearchStore } from "../stores/search";
 import Box from "../components/search/Box.vue";
 import Loader from "../components/Loader.vue";
 import { debounceAsync } from "../tools/debounce";
+import { useSysStore } from "../stores/sys";
+import { storeToRefs } from "pinia";
 
 const { searchStore, searchTypes } = useSearchStore();
+// const { scrollToBottom, getScrollState } = useSysStore();
+// const sysStore = useSysStore();
+const { scrollToBottom, getScrollState } = storeToRefs(useSysStore());
 
 // result have three state: loading, success, null map to 0, 1, 2
 const resState = ref(2);
@@ -118,6 +123,12 @@ async function scrollEvent(event) {
     await scrollHandler(event);
 }
 
+watch(scrollToBottom, async (val, oldval) => {
+    if (val == true && oldval == false) {
+        await get(30, searchStore.data.songs.length)
+    }
+});
+
 // label click event
 async function labelClickEvent(index) {
     searchStore.typeIdx = index;
@@ -183,8 +194,8 @@ onBeforeMount(() => {
     flex-direction: column;
     width: 100%;
     height: 100%;
-    margin-top: 60px;
-    overflow-y: scroll;
+    margin-top: 30px;
+
 
     .search-input {
         display: flex;

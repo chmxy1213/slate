@@ -83,7 +83,7 @@
         <!-- 歌手 -->
         <div class="box-inner" v-show="props.searchType == 100">
             <div class="inner-artist-container">
-                <div class="artist-card" v-for="item in props.data.artists" :key="item.id">
+                <div class="artist-card" v-for="item in props.data.artists" :key="item.id" @click="router.push({name: 'artist', query: {id: item.id}})">
                     <div class="cover">
                         <img :src="item.picUrl">
                     </div>

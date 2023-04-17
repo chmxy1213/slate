@@ -49,6 +49,12 @@ const router = createRouter({
 					name: "album",
 					component: () => import("../view/Album.vue"),
 				},
+				{
+					// 歌手
+					path: "artist",
+					name: "artist",
+					component: () => import("../view/Artist.vue"),
+				},
 			]
 		},
 	]
@@ -60,7 +66,7 @@ router.beforeEach(async (to, from) => {
 	// 返回 false 以取消导航
 
 	const { user, save, load } = useUserStore();
-	
+
 	if (!user.token) {
 		load();
 	}

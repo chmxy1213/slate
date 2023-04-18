@@ -262,7 +262,7 @@ watch(typeState, async () => {
 // 监听父组件的滚动事件状态
 watch(scrollToBottom, async (newVal, oldVal) => {
     console.log('触发监听事件');
-    if(newVal == true && oldVal == false) {
+    if (newVal == true && oldVal == false) {
         console.log('触发 scroll 事件');
         // 所有歌曲
         if (typeState.value == 1 && data.value.allSongs.length < data.value.artist.musicSize) {
@@ -275,7 +275,7 @@ watch(scrollToBottom, async (newVal, oldVal) => {
                 songs.value = data.value.allSongs;
                 console.log(data.value.allSongs);
             }
-        } 
+        }
         // 所有专辑
         else if (typeState.value == 2 && data.value.albums.length < data.value.artist.albumSize) {
             console.log('所有专辑加载更多');
@@ -694,6 +694,44 @@ onBeforeMount(async () => {
                 }
             }
         }
+    }
+}
+
+@keyframes swing {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    10% {
+        transform: rotate(3deg);
+    }
+
+    25% {
+        transform: rotate(5deg);
+    }
+
+    35% {
+        transform: rotate(3deg);
+    }
+
+    50% {
+        transform: rotate(0deg);
+    }
+
+    60% {
+        transform: rotate(-3deg);
+    }
+
+    75% {
+        transform: rotate(-5deg);
+    }
+
+    85% {
+        transform: rotate(-3deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
     }
 }
 </style>

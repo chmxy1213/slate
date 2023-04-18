@@ -25,71 +25,97 @@
                             <span>专辑：&nbsp;{{ data.artist.albumSize }}&nbsp;张&nbsp;</span>
                         </div>
                     </div>
-
                 </div>
+            </div>
+        </div>
+        <div class="types">
+            <div class="item" :class="{ 'active': index == typeState }" v-for="(item, index) in types" :key="index"
+                @click="typeState = index">
+                <span>{{ item }}</span>
             </div>
         </div>
         <!-- 页面体 -->
         <div class="artist-body">
-            <div class="btns">
-                <div class="btn-play">
-                    <i class="fa fa fa-play"></i>
+            <div class="hot-songs" v-show="typeState == 0 || typeState == 1">
+                <div class="btns">
+                    <div class="btn-play">
+                        <i class="fa fa fa-play"></i>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <div class="table-title">
+                        <div class="title-one">
+                            <span class="idx">{{ header[0] }}</span>
+                            <span>{{ header[1] }}</span>
+                        </div>
+                        <div class="title-two">
+                            <span>{{ header[2] }}</span>
+                        </div>
+                        <div class="title-three">
+                            <span>{{ header[3] }}</span>
+                        </div>
+                    </div>
+                    <div class="line"></div>
+                    <div class="table-body">
+                        <div class="table-item" v-for="(item, index) in songs">
+                            <div class="table-item-container" @dblclick="dbPlayEvent(item.id)">
+                                <div class="block-one">
+                                    <div class="index">
+                                        <span class="id">{{ index + 1 }}</span>
+                                        <span class="index-icon" @click="dbPlayEvent(item.id)">
+                                            <i class="fa fa-play fa-play" />
+                                        </span>
+                                    </div>
+                                    <div class="cover" v-if="item.picUrl">
+                                        <img :src="item.picUrl">
+                                    </div>
+                                    <div class="info">
+                                        <div class="name">
+                                            <!-- Check length -->
+                                            <p v-if="item.name.length > 20">{{ item.name.slice(0, 20) + "..." }}</p>
+                                            <p v-else>{{ item.name }}</p>
+                                        </div>
+                                        <div class="artists">
+                                            <!-- Check length -->
+                                            <p v-if="item.artists.length > 20">{{ item.artists.slice(0, 20) + "..." }}</p>
+                                            <p v-else>{{ item.artists }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="block-two">
+                                    <p>{{ item.album }}</p>
+                                </div>
+                                <div class="block-three">
+                                    <p>{{ item.time }}</p>
+                                </div>
+                                <!-- hover icons -->
+                                <div class="hover-icons">
+                                    <div class="icon" @click="likeEvent(item.id)">
+                                        <font-awesome-icon :icon="['fas', 'heart']" style="color: #fff;" />
+                                    </div>
+                                    <div class="icon" @click="addToQueueEvent(item.id)">
+                                        <font-awesome-icon :icon="['fas', 'plus']" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="table-container">
-                <div class="table-title">
-                    <div class="title-one">
-                        <span class="idx">{{ header[0] }}</span>
-                        <span>{{ header[1] }}</span>
-                    </div>
-                    <div class="title-two">
-                        <span>{{ header[2] }}</span>
-                    </div>
-                    <div class="title-three">
-                        <span>{{ header[3] }}</span>
-                    </div>
-                </div>
-                <div class="line"></div>
-                <div class="table-body">
-                    <div class="table-item" v-for="(item, index) in songs">
-                        <div class="table-item-container" @dblclick="dbPlayEvent(item.id)">
-                            <div class="block-one">
-                                <div class="index">
-                                    <span class="id">{{ index + 1 }}</span>
-                                    <span class="index-icon" @click="dbPlayEvent(item.id)">
-                                        <i class="fa fa-play fa-play" />
-                                    </span>
-                                </div>
-                                <div class="cover">
-                                    <img :src="item.picUrl">
-                                </div>
-                                <div class="info">
-                                    <div class="name">
-                                        <!-- Check length -->
-                                        <p v-if="item.name.length > 20">{{ item.name.slice(0, 20) + "..." }}</p>
-                                        <p v-else>{{ item.name }}</p>
-                                    </div>
-                                    <div class="artists">
-                                        <!-- Check length -->
-                                        <p v-if="item.artists.length > 20">{{ item.artists.slice(0, 20) + "..." }}</p>
-                                        <p v-else>{{ item.artists }}</p>
-                                    </div>
-                                </div>
+            <div class="album" v-show="typeState == 2">
+                <div class="inner-albums-container">
+                    <div class="album-card" v-for="item in data.albums" :key="item.id"
+                        @click="router.push({ name: 'album', query: { id: item.id } })">
+                        <div class="cover">
+                            <img :src="item.picUrl">
+                        </div>
+                        <div class="info">
+                            <div class="name">
+                                <span v-if="item.name.length >= 10">{{ item.name.slice(0, 9) + '...' }}</span>
+                                <span v-else>{{ item.name }}</span>
                             </div>
-                            <div class="block-two">
-                                <p>{{ item.album }}</p>
-                            </div>
-                            <div class="block-three">
-                                <p>{{ item.time }}</p>
-                            </div>
-                            <!-- hover icons -->
-                            <div class="hover-icons">
-                                <div class="icon" @click="likeEvent(item.id)">
-                                    <font-awesome-icon :icon="['fas', 'heart']" style="color: #fff;" />
-                                </div>
-                                <div class="icon" @click="addToQueueEvent(item.id)">
-                                    <font-awesome-icon :icon="['fas', 'plus']" />
-                                </div>
+                            <div class="artist">
+                                <span>{{ item.artist.name }}</span>
                             </div>
                         </div>
                     </div>
@@ -100,13 +126,14 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { ref, onBeforeMount, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { usePlayQueueStore } from "../stores/playQueue";
 import { invoke } from "@tauri-apps/api";
 
 const { add, playThis } = usePlayQueueStore();
 const route = useRoute();
+const router = useRouter
 
 const header = ["#", "标题", "专辑", "时长"];
 const data = ref({
@@ -121,8 +148,14 @@ const data = ref({
         publishTime: 0,
     },
     hotSongs: [],
+    allSongs: [],
+    albums: [],
 });
+const hotSongs = ref([]);
+const allSongs = ref([]);
 const songs = ref([]);
+const typeState = ref(0);
+const types = ["热门歌曲", "所有歌曲", "专辑"];
 
 // Request data and process data
 async function get(id) {
@@ -149,6 +182,9 @@ function processData(_data) {
         let dt_s = Math.floor(value.dt / 1000);
         let time_min = Math.floor(dt_s / 60);
         let time_s = Math.floor(dt_s - (time_min * 60));
+        if (time_s < 10) {
+            time_s = '0' + time_s;
+        }
         let time_string = time_min + ':' + time_s;
         // push to songs state
         tmp.push({
@@ -182,12 +218,36 @@ async function addToQueueEvent(id) {
     await add(id, -1);
 }
 
+watch(typeState, async () => {
+    if (typeState.value == 0) {
+        songs.value = hotSongs.value;
+    } else if (typeState.value == 1) {
+        console.log('all songs');
+        if (allSongs.value.length == 0) {
+            console.log('into');
+            let res = await invoke("get_artist_all_songs", { id: data.value.artist.id, limit: 40, offset: 0 });
+            console.log(res);
+            if (res.code == 200) {
+                data.value.allSongs = res.songs;
+                let songs_tmp = processData(data.value.allSongs);
+                allSongs.value = songs_tmp;
+                songs.value = songs_tmp;
+                console.log(allSongs.value);
+            }
+            console.log('over');
+        } else {
+            songs.value = allSongs.value;
+        }
+    }
+});
+
 onBeforeMount(async () => {
     let id = route.query.id;
     // TODO
     await get(id * 1);
     console.log(data.value);
     let songs_tmp = processData(data.value.hotSongs);
+    hotSongs.value = songs_tmp;
     songs.value = songs_tmp;
 });
 
@@ -281,6 +341,31 @@ onBeforeMount(async () => {
     //     backdrop-filter: blur(40px);
     // }
 
+    .types {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-top: 30px;
+        margin-left: 30px;
+        // border: 1px solid;
+
+        .item {
+            padding: 8px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            margin: 0 20px 0 0;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .active {
+            background-color: #fff;
+            color: #2a2a2a;
+            transition: .2s ease;
+        }
+    }
+
     .artist-body {
         display: flex;
         flex-direction: column;
@@ -288,199 +373,271 @@ onBeforeMount(async () => {
         padding-left: 20px;
         padding-right: 20px;
 
-        .btns {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            padding: 20px;
-
-            .btn-play {
-                width: 50px;
-                height: 50px;
-                background-color: #1fdf64;
-                border-radius: 50%;
+        .hot-songs {
+            .btns {
                 display: flex;
-                justify-content: center;
+                flex-direction: row;
                 align-items: center;
-                cursor: pointer;
+                padding: 20px;
 
-                i {
-                    color: #000;
-                    font-size: 20px;
+                .btn-play {
+                    width: 50px;
+                    height: 50px;
+                    background-color: #1fdf64;
+                    border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+
+                    i {
+                        color: #000;
+                        font-size: 20px;
+                    }
+                }
+            }
+
+            .table-container {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+
+                .table-title {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    grid-template-rows: 1fr;
+                    grid-column-gap: 0px;
+                    grid-row-gap: 0px;
+                    margin-top: 3px;
+                    margin-bottom: 3px;
+
+                    .title-one {
+                        grid-area: 1 / 1 / 2 / 3;
+                        margin-left: 20px;
+
+                        .idx {
+                            display: inline-block;
+                            margin-right: 38px;
+                        }
+                    }
+
+                    .title-two {
+                        grid-area: 1 / 3 / 2 / 4;
+                    }
+
+                    .title-three {
+                        display: flex;
+                        justify-content: flex-end;
+                        grid-area: 1 / 4 / 2 / 5;
+                    }
+                }
+
+                .line {
+                    width: 100%;
+                    height: 1px;
+                    background-color: #30383d;
+                    margin-bottom: 10px;
+                }
+
+                .table-body {
+                    .table-item {
+                        .table-item-container {
+                            display: grid;
+                            grid-template-columns: repeat(4, 1fr);
+                            grid-template-rows: 1fr;
+                            grid-column-gap: 0px;
+                            grid-row-gap: 0px;
+                            padding: 5px;
+                            color: #b3b3b3;
+
+                            .block-one {
+                                grid-area: 1 / 1 / 2 / 3;
+                                display: flex;
+                                align-items: center;
+                                justify-content: flex-start;
+                                flex-direction: row;
+                                margin-left: 10px;
+
+                                .index {
+                                    display: flex;
+                                    align-items: center;
+                                    margin: 2px;
+                                    width: 32px;
+                                    height: 32px;
+
+                                    .index-icon {
+                                        display: none;
+                                    }
+                                }
+
+                                .cover {
+                                    display: flex;
+                                    align-items: center;
+                                    margin: 2px;
+                                    margin-left: 20px;
+
+                                    img {
+                                        width: 50px;
+                                        height: 50px;
+                                    }
+                                }
+
+                                .info {
+                                    display: flex;
+                                    align-items: flex-start;
+                                    margin: 2px;
+                                    flex-direction: column;
+                                    margin-left: 20px;
+
+                                    .name {
+                                        display: flex;
+                                        color: #fff;
+                                        font-size: 15px;
+                                    }
+
+                                    .artists {
+                                        display: flex;
+                                        // color: #b3b3b3;
+                                        font-size: 12px;
+                                    }
+                                }
+                            }
+
+                            .block-two {
+                                grid-area: 1 / 3 / 2 / 4;
+                                display: flex;
+                                align-items: center;
+                                margin: 2px;
+                            }
+
+                            .block-three {
+                                grid-area: 1 / 4 / 2 / 5;
+                                display: flex;
+                                align-items: center;
+                                justify-content: flex-end;
+                                margin: 2px;
+                            }
+
+                            .hover-icons {
+                                display: none;
+
+                                .icon {
+                                    display: none;
+                                }
+                            }
+                        }
+
+                        .table-item-container:hover {
+                            position: relative;
+                            border-radius: 10px;
+                            background-color: #2a2a2a;
+                            cursor: pointer;
+                            opacity: 1;
+                            color: #fff;
+
+                            .block-one {
+                                .index {
+                                    .id {
+                                        display: none !important;
+                                    }
+
+                                    .index-icon {
+                                        display: inline !important;
+                                    }
+                                }
+                            }
+
+                            .hover-icons {
+                                position: absolute;
+                                right: 50px;
+                                top: 0;
+                                bottom: 0;
+                                margin: auto;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+
+                                .icon {
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    color: #fff;
+                                    width: 25px;
+                                    height: 25px;
+                                    margin: 0px 5px 0px 5px;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        .table-container {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-
-            .table-title {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                grid-template-rows: 1fr;
-                grid-column-gap: 0px;
-                grid-row-gap: 0px;
-                margin-top: 3px;
-                margin-bottom: 3px;
-
-                .title-one {
-                    grid-area: 1 / 1 / 2 / 3;
-                    margin-left: 20px;
-
-                    .idx {
-                        display: inline-block;
-                        margin-right: 38px;
-                    }
-                }
-
-                .title-two {
-                    grid-area: 1 / 3 / 2 / 4;
-                }
-
-                .title-three {
-                    display: flex;
-                    justify-content: flex-end;
-                    grid-area: 1 / 4 / 2 / 5;
-                }
-            }
-
-            .line {
+        .album {
+            .inner-albums-container {
+                display: flex;
+                justify-content: space-around;
+                align-items: flex-start;
+                flex-wrap: wrap;
+                align-content: flex-start;
                 width: 100%;
-                height: 1px;
-                background-color: #30383d;
-                margin-bottom: 10px;
-            }
+                height: 100%;
 
-            .table-body {
-                .table-item {
-                    .table-item-container {
-                        display: grid;
-                        grid-template-columns: repeat(4, 1fr);
-                        grid-template-rows: 1fr;
-                        grid-column-gap: 0px;
-                        grid-row-gap: 0px;
-                        padding: 5px;
-                        color: #b3b3b3;
+                .album-card {
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    flex-direction: column;
+                    margin: 10px;
+                    background-color: #2a2a2a;
+                    border-radius: 5px;
+                    padding: 10px;
 
-                        .block-one {
-                            grid-area: 1 / 1 / 2 / 3;
-                            display: flex;
-                            align-items: center;
-                            justify-content: flex-start;
-                            flex-direction: row;
-                            margin-left: 10px;
-
-                            .index {
-                                display: flex;
-                                align-items: center;
-                                margin: 2px;
-                                width: 32px;
-                                height: 32px;
-
-                                .index-icon {
-                                    display: none;
-                                }
-                            }
-
-                            .cover {
-                                display: flex;
-                                align-items: center;
-                                margin: 2px;
-                                margin-left: 20px;
-
-                                img {
-                                    width: 50px;
-                                    height: 50px;
-                                }
-                            }
-
-                            .info {
-                                display: flex;
-                                align-items: flex-start;
-                                margin: 2px;
-                                flex-direction: column;
-                                margin-left: 20px;
-
-                                .name {
-                                    display: flex;
-                                    color: #fff;
-                                    font-size: 15px;
-                                }
-
-                                .artists {
-                                    display: flex;
-                                    // color: #b3b3b3;
-                                    font-size: 12px;
-                                }
-                            }
-                        }
-
-                        .block-two {
-                            grid-area: 1 / 3 / 2 / 4;
-                            display: flex;
-                            align-items: center;
-                            margin: 2px;
-                        }
-
-                        .block-three {
-                            grid-area: 1 / 4 / 2 / 5;
-                            display: flex;
-                            align-items: center;
-                            justify-content: flex-end;
-                            margin: 2px;
-                        }
-
-                        .hover-icons {
-                            display: none;
-
-                            .icon {
-                                display: none;
-                            }
+                    .cover {
+                        img {
+                            width: 150px;
+                            height: 150px;
+                            border-radius: 5px;
+                            margin-bottom: 20px;
+                            margin-top: 10px;
                         }
                     }
 
-                    .table-item-container:hover {
-                        position: relative;
-                        border-radius: 10px;
-                        background-color: #2a2a2a;
-                        cursor: pointer;
-                        opacity: 1;
-                        color: #fff;
+                    .info {
+                        display: flex;
+                        justify-content: center;
+                        align-items: flex-start;
+                        flex-direction: column;
+                        width: 150px;
 
-                        .block-one {
-                            .index {
-                                .id {
-                                    display: none !important;
-                                }
-
-                                .index-icon {
-                                    display: inline !important;
-                                }
-                            }
-                        }
-
-                        .hover-icons {
-                            position: absolute;
-                            right: 50px;
-                            top: 0;
-                            bottom: 0;
-                            margin: auto;
+                        .name {
                             display: flex;
                             justify-content: center;
                             align-items: center;
-
-                            .icon {
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                color: #fff;
-                                width: 25px;
-                                height: 25px;
-                                margin: 0px 5px 0px 5px;
-                            }
+                            color: #fff;
+                            font-size: 15px;
+                            margin-bottom: 10px;
+                            font-weight: bolder;
                         }
+
+                        .artists {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: #b3b3b3;
+                            font-size: 12px;
+                        }
+                    }
+                }
+
+                .album-card:hover {
+                    cursor: pointer;
+                    background-color: #434242;
+                    transition: .5s;
+                    filter: drop-shadow(0px 0px 5px #b3b3b3);
+
+                    .cover {
+                        animation: swing .2s;
                     }
                 }
             }

@@ -122,7 +122,6 @@
                                     <span>{{ item.size }}首歌曲</span>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -136,8 +135,11 @@ import { ref, onBeforeMount, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { usePlayQueueStore } from "../stores/playQueue";
 import { invoke } from "@tauri-apps/api";
+import { useSysStore } from "../stores/sys";
+import { storeToRefs } from "pinia";
 
 const { add, playThis } = usePlayQueueStore();
+const { scrollToBottom } = storeToRefs(useSysStore());
 const route = useRoute();
 const router = useRouter();
 
@@ -179,7 +181,7 @@ function processData(_data) {
         // Process artists
         let ars = "";  // Artist String
         value.ar.forEach((value) => {
-            ars += `${value.name}`;
+            ars += `,${value.name}`;
         });
         ars = ars.replace(/^(\s|,)+|(\s|,)+$/g, '');
         // Process duration
@@ -231,6 +233,7 @@ function timestampToDate(timestamp) {
     return `${year}`;
 }
 
+// 监听显示类型
 watch(typeState, async () => {
     if (typeState.value == 0) {
         songs.value = data.value.hotSongs;
@@ -251,6 +254,36 @@ watch(typeState, async () => {
             let res = await invoke("get_artist_all_albums", { id: data.value.artist.id, limit: 30, offset: 0 });
             if (res.code == 200) {
                 data.value.albums = res.hotAlbums;
+            }
+        }
+    }
+});
+
+// 监听父组件的滚动事件状态
+watch(scrollToBottom, async (newVal, oldVal) => {
+    console.log('触发监听事件');
+    if(newVal == true && oldVal == false) {
+        console.log('触发 scroll 事件');
+        // 所有歌曲
+        if (typeState.value == 1 && data.value.allSongs.length < data.value.artist.musicSize) {
+            console.log('所有歌曲加载更多');
+            let res = await invoke("get_artist_all_songs", { id: data.value.artist.id, limit: 30, offset: data.value.allSongs.length });
+            console.log(res);
+            if (res.code == 200) {
+                let proces_res = processData(res.songs);
+                data.value.allSongs = data.value.allSongs.concat(proces_res);
+                songs.value = data.value.allSongs;
+                console.log(data.value.allSongs);
+            }
+        } 
+        // 所有专辑
+        else if (typeState.value == 2 && data.value.albums.length < data.value.artist.albumSize) {
+            console.log('所有专辑加载更多');
+            let res = await invoke("get_artist_all_albums", { id: data.value.artist.id, limit: 30, offset: data.value.albums.length });
+            console.log(res);
+            if (res.code == 200) {
+                data.value.albums = data.value.albums.concat(res.hotAlbums);
+                console.log(data.value.albums);
             }
         }
     }

@@ -114,9 +114,15 @@
                                 <span v-if="item.name.length >= 10">{{ item.name.slice(0, 9) + '...' }}</span>
                                 <span v-else>{{ item.name }}</span>
                             </div>
-                            <div class="artist">
-                                <span>{{ item.artist.name }}</span>
+                            <div class="row-2">
+                                <div class="publish-time">
+                                    <span>{{ timestampToDate(item.publishTime) }}·专辑</span>
+                                </div>
+                                <div class="size">
+                                    <span>{{ item.size }}首歌曲</span>
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -133,7 +139,7 @@ import { invoke } from "@tauri-apps/api";
 
 const { add, playThis } = usePlayQueueStore();
 const route = useRoute();
-const router = useRouter
+const router = useRouter();
 
 const header = ["#", "标题", "专辑", "时长"];
 const data = ref({
@@ -151,8 +157,6 @@ const data = ref({
     allSongs: [],
     albums: [],
 });
-const hotSongs = ref([]);
-const allSongs = ref([]);
 const songs = ref([]);
 const typeState = ref(0);
 const types = ["热门歌曲", "所有歌曲", "专辑"];
@@ -218,25 +222,36 @@ async function addToQueueEvent(id) {
     await add(id, -1);
 }
 
+// timestamp transform to date(YYYYD)
+function timestampToDate(timestamp) {
+    let date = new Date(timestamp);
+    let year = date.getFullYear();
+    // let month = date.getMonth() + 1;
+    // let day = date.getDate();
+    return `${year}`;
+}
+
 watch(typeState, async () => {
     if (typeState.value == 0) {
-        songs.value = hotSongs.value;
+        songs.value = data.value.hotSongs;
     } else if (typeState.value == 1) {
-        console.log('all songs');
-        if (allSongs.value.length == 0) {
-            console.log('into');
+        if (data.value.allSongs.length == 0) {
             let res = await invoke("get_artist_all_songs", { id: data.value.artist.id, limit: 40, offset: 0 });
-            console.log(res);
             if (res.code == 200) {
                 data.value.allSongs = res.songs;
-                let songs_tmp = processData(data.value.allSongs);
-                allSongs.value = songs_tmp;
+                let songs_tmp = processData(res.songs);
+                data.value.allSongs = songs_tmp;
                 songs.value = songs_tmp;
-                console.log(allSongs.value);
             }
-            console.log('over');
         } else {
-            songs.value = allSongs.value;
+            songs.value = data.value.allSongs;
+        }
+    } else if (typeState.value == 2) {
+        if (data.value.albums.length == 0) {
+            let res = await invoke("get_artist_all_albums", { id: data.value.artist.id, limit: 30, offset: 0 });
+            if (res.code == 200) {
+                data.value.albums = res.hotAlbums;
+            }
         }
     }
 });
@@ -247,7 +262,7 @@ onBeforeMount(async () => {
     await get(id * 1);
     console.log(data.value);
     let songs_tmp = processData(data.value.hotSongs);
-    hotSongs.value = songs_tmp;
+    data.value.hotSongs = songs_tmp;
     songs.value = songs_tmp;
 });
 
@@ -347,6 +362,7 @@ onBeforeMount(async () => {
         align-items: center;
         margin-top: 30px;
         margin-left: 30px;
+        margin-bottom: 20px;
         // border: 1px solid;
 
         .item {
@@ -620,12 +636,15 @@ onBeforeMount(async () => {
                             font-weight: bolder;
                         }
 
-                        .artists {
+                        .row-2 {
+                            width: 100%;
                             display: flex;
-                            justify-content: center;
+                            flex-direction: row;
+                            justify-content: space-between;
                             align-items: center;
                             color: #b3b3b3;
                             font-size: 12px;
+                            font-weight: bolder;
                         }
                     }
                 }

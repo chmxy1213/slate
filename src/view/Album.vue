@@ -193,8 +193,6 @@ onBeforeMount(async () => {
     flex-direction: column;
     width: 100%;
     height: 100%;
-    margin-top: 60px;
-    // overflow-y: scroll;
 
     .album-header {
         display: flex;

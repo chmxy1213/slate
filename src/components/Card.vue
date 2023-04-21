@@ -35,7 +35,7 @@ const visual = ref(false);
 
 // skip to playlist
 function skip() {
-    router.push({ name: "playlist", query: { id: props.id } });
+    router.push({ name: "playlist", query: { id: props.id, type: "top" } });
     console.log("skip");
 }
 

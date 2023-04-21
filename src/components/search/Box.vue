@@ -101,7 +101,7 @@
         <div class="box-inner" v-show="props.searchType == 1000">
             <div class="inner-playlist-container">
                 <div class="playlist-card" v-for="item in props.data.playlists" :key="item.id"
-                    @click="router.push({ name: 'playlist', query: {id: item.id } })">
+                    @click="router.push({ name: 'playlist', query: {id: item.id, type: 'normal' } })">
                     <div class="cover">
                         <img :src="item.coverImgUrl">
                     </div>

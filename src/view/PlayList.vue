@@ -1,21 +1,23 @@
 <!-- 歌单组件 -->
+<!-- 根据路由参数选择加载模式(type: ["top": "榜单", "normal": "一般歌单"]) -->
 <template>
     <div class="playlist-container">
         <canvas id="canvas" style="display: none;"></canvas>
         <!-- 页面头 -->
         <div class="playlist-header">
             <div class="cover">
-                <img id="cover" crossorigin="anonymous" :src="thisTopList.coverImgUrl">
+                <img id="cover" crossorigin="anonymous" :src="headerData.coverImgUrl">
             </div>
             <div class="section-two">
                 <div class="playlist-name">
-                    <p>{{ thisTopList.name }}</p>
+                    <p>{{ headerData.name }}</p>
                 </div>
                 <div class="playlist-description">
-                    <span>{{ thisTopList.description }}</span>
+                    <span v-if="headerData.description.length > 150">{{ headerData.description.slice(0, 150) + '...' }}</span>
+                    <span v-else>{{ headerData.description }}</span>
                 </div>
                 <div class="playlist-playcount">
-                    <p>播放&nbsp;{{ thisTopList.playCount }}&nbsp;次</p>
+                    <p>播放&nbsp;{{ headerData.playCount }}&nbsp;次</p>
                 </div>
             </div>
         </div>
@@ -26,7 +28,7 @@
                     <i class="fa fa fa-play"></i>
                 </div>
             </div>
-            <Table :header="header" :data="songs" :events="[dbPlayEvent, likeEvent, addToQueueEvent]" />
+            <Table :header="tableHeader" :data="songsData" :events="[dbPlayEvent, likeEvent, addToQueueEvent]" />
         </div>
     </div>
 </template>
@@ -43,34 +45,31 @@ import { useSysStore } from "../stores/sys";
 import { storeToRefs } from "pinia";
 
 const { topLists } = useTopListStore();
-const { playQueueState, add, remove, previous, next, playThis } = usePlayQueueStore();
-const { playListData } = usePlayListStore(); 
+const { add, playThis } = usePlayQueueStore();
+const { playListData } = usePlayListStore();
 const { scrollToBottom } = storeToRefs(useSysStore());
 
 const route = useRoute();
 
-const thisTopList = ref({});
-const header = ["#", "标题", "专辑", "时长"];
-const data = ref([]);   // This request native data, not process.
-const songs = ref([]);  // this is songs data, after process.
-
-// Request top list music use route's query's id
-async function get(limit, offset) {
-    let res = await invoke("get_hot_music_list", { id: route.query.id * 1, limit, offset });
-    if (res.code === 200) {
-        data.value = res.songs;
-    }
-}
+const headerData = ref({
+    name: "",
+    coverImgUrl: "",
+    description: "",
+    playCount: 0,
+});
+const songsData = ref([]);
+const tableHeader = ["#", "标题", "专辑", "时长"];
 
 // TODO: this fucntion is some same with `req.js`.
 // process the request's data
 // Require: id, name, picUrl, artists, album, time
-function processData() {
-    data.value.forEach((value) => {
+function processData(_data) {
+    let tmp = [];
+    _data.forEach((value) => {
         // Process artists
         let ars = "";  // Artist String
         value.ar.forEach((value) => {
-            ars += `${value.name}`;
+            ars += `,${value.name}`;
         });
         ars = ars.replace(/^(\s|,)+|(\s|,)+$/g, '');
         // Process duration
@@ -78,8 +77,7 @@ function processData() {
         let time_min = Math.floor(dt_s / 60);
         let time_s = Math.floor(dt_s - (time_min * 60));
         let time_string = time_min + ':' + time_s;
-        // push to songs state
-        songs.value.push({
+        tmp.push({
             id: value.id,
             name: value.name,
             picUrl: value.al.picUrl,
@@ -88,6 +86,7 @@ function processData() {
             time: time_string,
         });
     });
+    return tmp;
 }
 
 // compute imgage's theme color
@@ -139,19 +138,21 @@ function comClr() {
 async function task() {
     // Request data
     // check if songs length is less than this top list's length
-    if (songs.value.length < thisTopList.value.trackCount) {
-        await get(10, songs.value.length);
-        // Process data
-        processData();
+    if (songsData.value.length < headerData.value.trackCount) {
+        let res = await invoke("get_playlist_all_music", { id: route.query.id*1, limit: 30, offset: songsData.value.length });
+        if (res.code == 200) {
+            songsData.value = songsData.value.concat(processData(res.songs));
+            console.log(songsData.value);
+        }
     }
-};
+}
 
+// 滚动加载监听
 watch(scrollToBottom, async (val, oldval) => {
     if (val == true && oldval == false) {
         await task();
     }
 });
-
 
 // double click play event
 async function dbPlayEvent(id) {
@@ -172,19 +173,20 @@ async function addToQueueEvent(id) {
     await add(id, -1);
 }
 
-onBeforeMount(async () => {
-    // LOG
-    console.log("Playlist.vue's log.");
-    // find this top list data from `topLists Store`.
+/**
+ * @description 加载top list的数据
+ * @param {Number} id top list的id
+ */
+async function loadTopListData(id) {
     topLists.data.forEach((value) => {
         if (value.id == route.query.id) {
-            thisTopList.value = value;
+            headerData.value = value;
         }
     });
     let hitPlayListData = false;
     playListData.forEach((value) => {
         if (value.id == route.query.id) {
-            songs.value = value.items;
+            songsData.value = value.items;
             hitPlayListData = true;
         }
     });
@@ -193,13 +195,48 @@ onBeforeMount(async () => {
             id: route.query.id,
             items: [],
         });
-        songs.value = playListData[playListData.length - 1].items;
+        songsData.value = playListData[playListData.length - 1].items;
     }
-    if (!hitPlayListData || songs.value.length == 0) {
-        // Request data
-        await get(10, 0);
-        // Process data
-        processData();
+    if (!hitPlayListData || songsData.value.length == 0) {
+        let res = await invoke("get_playlist_all_music", { id, limit: 30, offset: 0 });
+        if (res.code === 200) {
+            songsData.value = processData(res.songs);
+        }
+    }
+}
+
+/**
+ * @description 加载normal list的数据
+ * @param {Number} id normal list的id
+ */
+async function loadNornmalListData(id) {
+    // 请求歌曲详情数据
+    let res = await invoke("get_playlist_detail", { id });
+    // 构造 headerData并赋值给 `headerData`
+    if (res.code == 200) {
+        headerData.value = res.playlist;
+    } else {
+        return;
+    }
+    // 请求歌单所有歌曲
+    let resALlMusic = await invoke("get_playlist_all_music", {
+        id,
+        limit: 30,
+        offset: 0,
+    });
+    // 解析歌曲数据
+    // 并将数据赋值到 `songsData`
+    if (resALlMusic.code == 200) {
+        songsData.value = processData(resALlMusic.songs);
+    }
+}
+
+onBeforeMount(async () => {
+    let _type = route.query.type;
+    if (_type == "top") {
+        await loadTopListData(route.query.id*1);
+    } else if (_type == "normal") {
+        await loadNornmalListData(route.query.id*1);
     }
     // BUG coumpute image's theme color
     // comClr();
@@ -238,6 +275,7 @@ onBeforeMount(async () => {
 
                 p {
                     font-size: 35px;
+                    line-height: 40px;
                     font-weight: 900;
                 }
             }

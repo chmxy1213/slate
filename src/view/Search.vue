@@ -79,7 +79,7 @@ async function get(limit, offset) {
         limit: limit,
         offset: offset
     });
-
+    console.log(res);
     // TODO
     if (searchTypes[searchStore.typeIdx].id == 1) {
         searchStore.data.songs.push(...processData(res.Song.result.songs));

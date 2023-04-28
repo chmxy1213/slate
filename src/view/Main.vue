@@ -107,7 +107,7 @@ onBeforeMount(async () => {
 		display: flex;
 		flex-direction: column;
 
-		.body {
+		.box {
 			display: flex;
 			flex-grow: 1;
 		}

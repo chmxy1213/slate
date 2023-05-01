@@ -4,7 +4,7 @@
         <h3 class="title">播放队列</h3>
         <div class="items">
             <div class="item" v-for="(item, index) of store.list">
-                <MusicItem :id="index + 1" :info="item" @dblclick="dblclick(item)" />
+                <MusicItem :id="index + 1" :info="item" @dblclick="dblclick(index)" />
             </div>
         </div>
     </div>
@@ -16,14 +16,11 @@ import MusicItem from "../components/MusicItem.vue";
 import { usePlayQueueStore } from "../stores/playQueue";
 import { useMusicStore } from "../stores/music";
 
-const { load, play } = useMusicStore();
-const { playQueueState: store } = usePlayQueueStore();
+const { playQueueState: store, playThis } = usePlayQueueStore();
 
 // Click item play music event.
-async function dblclick(obj) {
-    console.log(`double click: ${obj}`);
-    await load(obj);
-    play();
+async function dblclick(idx) {
+    await playThis(idx);
 }
 </script>
 

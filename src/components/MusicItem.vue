@@ -1,3 +1,4 @@
+<!-- 只被 Playlist Queue组件使用 -->
 <template>
     <div class="container-music-item">
         <div class="collect">
@@ -27,11 +28,20 @@
         <div class="time">
             <p>{{ time.str }}</p>
         </div>
+        <!-- hover icons -->
+        <div class="hover-icons">
+            <div v-if="playQueueState.idx != id" class="icon" title="移除" @click="rm(info.id)">
+                <font-awesome-icon :icon="['fas', 'minus']" />
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
 import { ref, onBeforeMount } from "vue";
+import { usePlayQueueStore } from "../stores/playQueue";
+
+const { playQueueState } = usePlayQueueStore();
 
 const time = ref({
     minute: 0,
@@ -42,6 +52,7 @@ const time = ref({
 const props = defineProps({
     id: Number,
     info: Object,
+    rm: Function,
 });
 
 onBeforeMount(() => {
@@ -89,6 +100,7 @@ onBeforeMount(() => {
             margin: 2px;
             width: 32px;
             height: 32px;
+
             .index-icon {
                 display: none;
             }
@@ -138,6 +150,14 @@ onBeforeMount(() => {
         justify-content: flex-end;
         margin: 2px;
     }
+
+    .hover-icons {
+        display: none;
+
+        .icon {
+            display: none;
+        }
+    }
 }
 
 .container-music-item:hover {
@@ -145,14 +165,36 @@ onBeforeMount(() => {
     background-color: #2a2a2a;
     cursor: pointer;
     opacity: 1;
+    position: relative;
+
     .collect {
         .index {
             .id {
                 display: none !important;
             }
+
             .index-icon {
                 display: inline !important;
             }
+        }
+    }
+
+    .hover-icons {
+        position: absolute;
+        right: 50px;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .icon {
+            display: flex;
+            color: #fff;
+            width: 25px;
+            height: 25px;
+            margin: 0px 5px 0px 5px;
         }
     }
 }

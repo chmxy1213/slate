@@ -124,7 +124,7 @@ onBeforeMount(async () => {
             token: user.token,
             id: user.id,
         }).then(data => [data, null]).catch(err => [null, err]);
-        if (err === null) {
+        if (data) {
             data.data.forEach((value) => {
                 if (value.name === "__LIKE__") {
                     playlists.like = value;

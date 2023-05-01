@@ -251,7 +251,7 @@ async function loadCustomListData(id, token) {
     if (err === null) {
         console.log(res);
         headerData.value = {
-            name: res.data.playlist.name,
+            name: res.data.playlist.name === "__LIKE__" ? "我喜欢的音乐" : res.data.playlist.name,
             // coverImgUrl: data.data.playlist.coverImgUrl,
             coverImgUrl: "/cover/我的名字.jpg",
             description: "",

@@ -10,10 +10,11 @@
         <div class="like-box">
             <!-- 我的 -->
             <div v-show="menuSelect == 0" class="inner-box mine-box">
-                <div class="mine-like-card">
+                <div class="mine-like-card" @click="$router.push({ name: 'playlist', query: { type: 'custom', id: playlists.like.id }})">
                     <span>喜欢的音乐</span>
                 </div>
-                <div class="mine-playlist-card" v-for="(item, index) in mineCreatePlaylist" :key="index">
+                <div class="mine-playlist-card" v-for="(item, index) in mineCreatePlaylist" :key="index"
+                    @click="$router.push({ name: 'playlist', query: { type: 'custom', id: item.id }})">
                     <!-- <img :src="item.coverImg"> -->
                     <img src="/cover/我的名字.jpg">
                     <div class="row">
@@ -78,10 +79,10 @@ import { onBeforeMount, ref } from "vue";
 import { invoke } from "@tauri-apps/api";
 import { useUserStore } from "../stores/user";
 
-const { user } = useUserStore();
+const { user, playlists } = useUserStore();
 const menus = ["我的", "歌手", "专辑", "歌单"];
 const menuSelect = ref(0);
-const mineCreatePlaylist = ref([]);
+const mineCreatePlaylist = ref([{ id: 0, name: "", coverImg: "" }]);
 const artists = ref([
     {
         name: "歌手1", coverImg: "/cover/我的名字.jpg"
@@ -118,14 +119,25 @@ const playlist = ref([
 
 onBeforeMount(async () => {
     // 用户歌单请求
-    let [data, err] = await invoke("get_all_playlist_header", {
-        token: user.token,
-        id: user.id,
-    }).then(data => [data, null]).catch(err => [null, err]);
-    if (err === null) {
-        console.log("获取用户歌单成功");
-        mineCreatePlaylist.value = data.data;
+    if (playlists.custom.length === 0) {
+        let [data, err] = await invoke("get_all_playlist_header", {
+            token: user.token,
+            id: user.id,
+        }).then(data => [data, null]).catch(err => [null, err]);
+        if (err === null) {
+            data.data.forEach((value) => {
+                if (value.name === "__LIKE__") {
+                    playlists.like = value;
+                } else {
+                    playlists.custom.push(value);
+                }
+            });
+        } else {
+            console.log("获取用户歌单失败");
+            console.log(err);
+        }
     }
+    mineCreatePlaylist.value = playlists.custom;
 });
 </script>
 

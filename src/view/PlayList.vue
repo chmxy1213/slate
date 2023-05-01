@@ -1,5 +1,5 @@
 <!-- 歌单组件 -->
-<!-- 根据路由参数选择加载模式(type: ["top": "榜单", "normal": "一般歌单"]) -->
+<!-- 根据路由参数选择加载模式(type: ["top": "榜单", "normal": "一般歌单", "custom": "自定义歌单"]) -->
 <template>
     <div class="playlist-container">
         <canvas id="canvas" style="display: none;"></canvas>
@@ -13,7 +13,8 @@
                     <p>{{ headerData.name }}</p>
                 </div>
                 <div class="playlist-description">
-                    <span v-if="headerData.description.length > 150">{{ headerData.description.slice(0, 150) + '...' }}</span>
+                    <span v-if="headerData.description.length > 150">{{ headerData.description.slice(0, 150) + '...'
+                    }}</span>
                     <span v-else>{{ headerData.description }}</span>
                 </div>
                 <div class="playlist-playcount">
@@ -43,11 +44,14 @@ import { usePlayQueueStore } from "../stores/playQueue";
 import { usePlayListStore } from "../stores/playList";
 import { useSysStore } from "../stores/sys";
 import { storeToRefs } from "pinia";
+import { useUserStore } from "../stores/user";
+import { reqMusicDetail } from "../tools/req";
 
 const { topLists } = useTopListStore();
 const { add, playThis } = usePlayQueueStore();
 const { playListData } = usePlayListStore();
 const { scrollToBottom } = storeToRefs(useSysStore());
+const { user } = useUserStore();
 
 const route = useRoute();
 
@@ -139,7 +143,7 @@ async function task() {
     // Request data
     // check if songs length is less than this top list's length
     if (songsData.value.length < headerData.value.trackCount) {
-        let res = await invoke("get_playlist_all_music", { id: route.query.id*1, limit: 30, offset: songsData.value.length });
+        let res = await invoke("get_playlist_all_music", { id: route.query.id * 1, limit: 30, offset: songsData.value.length });
         if (res.code == 200) {
             songsData.value = songsData.value.concat(processData(res.songs));
             console.log(songsData.value);
@@ -231,12 +235,59 @@ async function loadNornmalListData(id) {
     }
 }
 
+/**
+ * @description 加载自定义歌单数据
+ * @param {Number} id 自定义歌单的id
+ * @param {String} token 用户的token
+ */
+async function loadCustomListData(id, token) {
+    let [res, err] = await invoke("get_allsong_playlist", { token, id })
+        .then(res => [res, null])
+        .catch(err => [null, err]);
+    if (err === null) {
+        console.log(res);
+        headerData.value = {
+            name: res.data.playlist.name,
+            // coverImgUrl: data.data.playlist.coverImgUrl,
+            coverImgUrl: "/cover/我的名字.jpg",
+            description: "",
+            playCount: res.data.playlist.playCount,
+        }
+        if (res.data.songIds.length === 0) {
+            console.log("empty playlist");
+            return;
+        } else {
+            const getMusicDetail = async (id) => {
+                let innerRes = await invoke("get_music_detail", { id });
+                if (innerRes.code == 200) {
+                    return innerRes.songs[0];
+                }
+            };
+            let tmp_arr = [];
+            let count = 0;
+            await res.data.songIds.forEach(async (id) => {
+                let _data = await getMusicDetail(id);
+                console.log(_data);
+                tmp_arr.push(_data);
+                count++;
+                if (count == res.data.songIds.length) {
+                    songsData.value = processData(tmp_arr);
+                }
+            });
+        }
+    } else {
+        console.log(err);
+    }
+}
+
 onBeforeMount(async () => {
     let _type = route.query.type;
     if (_type == "top") {
-        await loadTopListData(route.query.id*1);
+        await loadTopListData(route.query.id * 1);
     } else if (_type == "normal") {
-        await loadNornmalListData(route.query.id*1);
+        await loadNornmalListData(route.query.id * 1);
+    } else if (_type == "custom") {
+        await loadCustomListData(route.query.id * 1, user.token);
     }
     // BUG coumpute image's theme color
     // comClr();

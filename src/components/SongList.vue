@@ -1,20 +1,22 @@
 <template>
     <div class="song-list">
         <ul>
-            <li v-for="item in songLists">
-                <a href="#">{{ item.name }}</a>
+            <li v-for="item in list">
+                <RouterLink v-if="item.name !== '__LIKE__'" :to="{ name: 'playlist', query: { id: item.id, type: 'custom' } }">{{ item.name }}</RouterLink>
             </li>
         </ul>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
+import { useUserStore } from "../stores/user";
+import { RouterLink } from "vue-router";
 
-const songLists = ref([
-    { name: "歌单1", slid: "111" },
-    { name: "歌单2", slid: "222" },
-]);
+const list = ref([]);
+const { playlists } = useUserStore();
+
+list.value = playlists.custom;
 </script>
 
 <style scoped lang="less">

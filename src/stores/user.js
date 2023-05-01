@@ -10,6 +10,11 @@ export const useUserStore = defineStore("user", () => {
         token: "",
     });
 
+    const playlists = ref({
+        like: {},
+        custom: [],
+    });
+
     // save data to local storage
     function save() {
         localStorage.setItem("user", JSON.stringify(user.value));
@@ -31,5 +36,5 @@ export const useUserStore = defineStore("user", () => {
             user.value.token = p.token;
         }
     }
-    return { user, save, load };
+    return { user, playlists, save, load };
 });

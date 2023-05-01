@@ -45,7 +45,6 @@ import { usePlayListStore } from "../stores/playList";
 import { useSysStore } from "../stores/sys";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "../stores/user";
-import { reqMusicDetail } from "../tools/req";
 
 const { topLists } = useTopListStore();
 const { add, playThis } = usePlayQueueStore();
@@ -156,6 +155,11 @@ watch(scrollToBottom, async (val, oldval) => {
     if (val == true && oldval == false) {
         await task();
     }
+});
+
+// 路由监听，确保路由query变化更新数据
+watch(route, async (val, _) => {
+    await loadCustomListData(val.query.id * 1, user.token);
 });
 
 // double click play event

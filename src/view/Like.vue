@@ -118,25 +118,7 @@ const playlist = ref([
 ]);
 
 onBeforeMount(async () => {
-    // 用户歌单请求
-    if (playlists.custom.length === 0) {
-        let [data, err] = await invoke("get_all_playlist_header", {
-            token: user.token,
-            id: user.id,
-        }).then(data => [data, null]).catch(err => [null, err]);
-        if (data) {
-            data.data.forEach((value) => {
-                if (value.name === "__LIKE__") {
-                    playlists.like = value;
-                } else {
-                    playlists.custom.push(value);
-                }
-            });
-        } else {
-            console.log("获取用户歌单失败");
-            console.log(err);
-        }
-    }
+    // 用户歌单赋值
     mineCreatePlaylist.value = playlists.custom;
 });
 </script>

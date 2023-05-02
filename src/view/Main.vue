@@ -25,26 +25,27 @@ import { useMusicStore } from "../stores/music";
 import { usePlayQueueStore } from "../stores/playQueue";
 import { debounceAsync } from "../tools/debounce";
 import { useSysStore } from "../stores/sys"
+import { useUserStore } from "../stores/user";
 
 const { music, load, play, pause, initAudio } = useMusicStore();
 const { playQueueState, previous, next, add, remove } = usePlayQueueStore();
 const { scrollToBottom, change } = useSysStore();
-// const sysStore = useSysStore();
+const { user, playlists } = useUserStore();
 
 let ids = [28731108, 34274470, 65533, 65528, 1974443814, 65536, 28563317, 65538];
 
 // scroll event
 const scrollHandler = debounceAsync(async function (event) {
-    // Check if the scroll is at the bottom
-    if (event.target.scrollTop + event.target.clientHeight >= event.target.scrollHeight) {
-        change(true);
+	// Check if the scroll is at the bottom
+	if (event.target.scrollTop + event.target.clientHeight >= event.target.scrollHeight) {
+		change(true);
 		setTimeout(() => {
 			change(false);
 		}, 500);
-    } 
+	}
 }, 500);
 async function scrollEvent(event) {
-    await scrollHandler(event);
+	await scrollHandler(event);
 }
 
 onBeforeMount(async () => {
@@ -75,6 +76,24 @@ onBeforeMount(async () => {
 		console.log(event.payload);
 		next();
 	});
+
+	// 请求用户歌单信息
+	let [data, err] = await invoke("get_all_playlist_header", {
+		token: user.token,
+		id: user.id,
+	}).then(data => [data, null]).catch(err => [null, err]);
+	if (data) {
+		data.data.forEach((value) => {
+			if (value.name === "__LIKE__") {
+				playlists.like = value;
+			} else {
+				playlists.custom.push(value);
+			}
+		});
+	} else {
+		console.log("获取用户歌单失败");
+		console.log(err);
+	}
 });
 </script>
 

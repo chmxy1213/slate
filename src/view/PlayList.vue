@@ -6,7 +6,13 @@
         <!-- 页面头 -->
         <div class="playlist-header">
             <div class="cover">
-                <img id="cover" crossorigin="anonymous" :src="headerData.coverImgUrl">
+                <div v-if="route.query.type == 'custom'" class="four-img">
+                    <img :src="songsData[0].picUrl">
+                    <img :src="songsData[1].picUrl">
+                    <img :src="songsData[2].picUrl">
+                    <img :src="songsData[3].picUrl">
+                </div>
+                <img v-else id="cover" crossorigin="anonymous" :src="headerData.coverImgUrl">
             </div>
             <div class="section-two">
                 <div class="playlist-name">
@@ -146,7 +152,6 @@ async function task() {
         let res = await invoke("get_playlist_all_music", { id: route.query.id * 1, limit: 30, offset: songsData.value.length });
         if (res.code == 200) {
             songsData.value = songsData.value.concat(processData(res.songs));
-            console.log(songsData.value);
         }
     }
 }
@@ -176,8 +181,6 @@ async function likeEvent(id) {
 
 // add to queue event
 async function addToQueueEvent(id) {
-    // TODO
-    console.log(`add to queue ${id}`);
     await add(id, -1);
 }
 
@@ -249,11 +252,10 @@ async function loadCustomListData(id, token) {
         .then(res => [res, null])
         .catch(err => [null, err]);
     if (err === null) {
-        console.log(res);
         headerData.value = {
             name: res.data.playlist.name === "__LIKE__" ? "我喜欢的音乐" : res.data.playlist.name,
             // coverImgUrl: data.data.playlist.coverImgUrl,
-            coverImgUrl: "/cover/我的名字.jpg",
+            coverImgUrl: "",
             description: "",
             playCount: res.data.playlist.playCount,
         }
@@ -271,11 +273,11 @@ async function loadCustomListData(id, token) {
             let count = 0;
             await res.data.songIds.forEach(async (id) => {
                 let _data = await getMusicDetail(id);
-                console.log(_data);
                 tmp_arr.push(_data);
                 count++;
                 if (count == res.data.songIds.length) {
                     songsData.value = processData(tmp_arr);
+                    headerData.value.coverImgUrl = songsData.value[0].picUrl;
                 }
             });
         }
@@ -311,6 +313,19 @@ onBeforeMount(async () => {
         background-color: #457394;
 
         .cover {
+            .four-img {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(2, 1fr);
+                grid-column-gap: 0px;
+                grid-row-gap: 0px;
+
+                img {
+                    width: 100px;
+                    height: 100px;
+                }
+            }
+
             img {
                 width: 200px;
                 height: 200px;

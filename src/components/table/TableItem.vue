@@ -33,7 +33,8 @@
         <!-- hover icons -->
         <div class="hover-icons">
             <div class="icon" @click="events[1](data.id)">
-                <font-awesome-icon :icon="['fas', 'heart']" style="color: #fff;" />
+                <font-awesome-icon v-if="checkLikeMusic(data.id)" :icon="['fas', 'heart']" style="color: #1fdf64;" />
+                <font-awesome-icon v-else :icon="['fas', 'heart']" style="color: #fff;" />
             </div>
             <div class="icon" @click="events[2](data.id)">
                 <font-awesome-icon :icon="['fas', 'plus']" />
@@ -43,6 +44,8 @@
 </template>
 
 <script setup>
+import { checkLikeMusic } from "../../tools/user";
+
 // data: [id, picUrl, name, artists, album, time]
 const props = defineProps({
     id: { type: Number, required: true },

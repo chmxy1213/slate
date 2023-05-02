@@ -36,6 +36,7 @@
         </div>
         <!-- 页面体 -->
         <div class="artist-body">
+            <!-- 歌曲 -->
             <div class="hot-songs" v-show="typeState == 0 || typeState == 1">
                 <div class="btns">
                     <div class="btn-play">
@@ -91,7 +92,9 @@
                                 <!-- hover icons -->
                                 <div class="hover-icons">
                                     <div class="icon" @click="likeEvent(item.id)">
-                                        <font-awesome-icon :icon="['fas', 'heart']" style="color: #fff;" />
+                                        <font-awesome-icon v-if="checkLikeMusic(item.id)" :icon="['fas', 'heart']"
+                                            style="color: #1fdf64;" />
+                                        <font-awesome-icon v-else :icon="['fas', 'heart']" style="color: #fff;" />
                                     </div>
                                     <div class="icon" @click="addToQueueEvent(item.id)">
                                         <font-awesome-icon :icon="['fas', 'plus']" />
@@ -102,6 +105,7 @@
                     </div>
                 </div>
             </div>
+            <!-- 专辑 -->
             <div class="album" v-show="typeState == 2">
                 <div class="inner-albums-container">
                     <div class="album-card" v-for="item in data.albums" :key="item.id"
@@ -137,6 +141,7 @@ import { usePlayQueueStore } from "../stores/playQueue";
 import { invoke } from "@tauri-apps/api";
 import { useSysStore } from "../stores/sys";
 import { storeToRefs } from "pinia";
+import { checkLikeMusic, likeMusic } from "../tools/user";
 
 const { add, playThis } = usePlayQueueStore();
 const { scrollToBottom } = storeToRefs(useSysStore());
@@ -212,14 +217,12 @@ async function dbPlayEvent(id) {
 }
 
 // like event
-function likeEvent(id) {
-    // TODO
-    console.log(`like ${id}`);
+async function likeEvent(id) {
+    await likeMusic(id);
 }
 
 // add to queue event
 async function addToQueueEvent(id) {
-    // TODO
     console.log(`add to queue ${id}`);
     await add(id, -1);
 }

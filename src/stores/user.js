@@ -11,7 +11,11 @@ export const useUserStore = defineStore("user", () => {
     });
 
     const playlists = ref({
-        like: {},
+        like: {
+            head: {},
+            songs: [],
+        },
+        // { head:{}, songs:[] }
         custom: [],
     });
 

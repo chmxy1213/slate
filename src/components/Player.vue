@@ -7,17 +7,21 @@
             </div>
             <div class="music-info">
                 <div class="music-name">
-                    <a v-if="music.info.name.length >= 10" href="javascript:;">{{ music.info.name.slice(0, 10) + '...' }}</a>
+                    <a v-if="music.info.name.length >= 10" href="javascript:;">{{ music.info.name.slice(0, 10) + '...'
+                    }}</a>
                     <a v-else href="javascript:;">{{ music.info.name }}</a>
                 </div>
                 <div class="music-artist">
-                    <a v-if="music.info.artists.length >= 10" href="javascript:;">{{ music.info.artists.slice(0, 10) + '...' }}</a>
+                    <a v-if="music.info.artists.length >= 10" href="javascript:;">{{ music.info.artists.slice(0, 10) + '...'
+                    }}</a>
                     <a v-else href="javascript:;">{{ music.info.artists }}</a>
                 </div>
             </div>
             <div class="fav-btn">
                 <a href="#">
-                    <img src="/fav.svg" style="width: 25px;height: 25px;" />
+                    <font-awesome-icon v-if="checkLikeMusic(music.info.id)" :icon="['fas', 'heart']" style="color: #1fdf64;" />
+                    <img v-else src="/fav.svg" style="width: 25px;height: 25px;" />
+                    
                 </a>
             </div>
         </div>
@@ -68,6 +72,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useRouter } from "vue-router";
 import { useMusicStore } from "../stores/music.js";
 import { usePlayQueueStore } from "../stores/playQueue";
+import { checkLikeMusic } from "../tools/user";
 
 const router = useRouter();
 const { music, load, play, pause } = useMusicStore();

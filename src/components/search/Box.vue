@@ -50,7 +50,9 @@
                             <!-- hover icons -->
                             <div class="hover-icons">
                                 <div class="icon" @click="like(item.id)">
-                                    <font-awesome-icon :icon="['fas', 'heart']" style="color: #fff;" />
+                                    <font-awesome-icon v-if="checkLikeMusic(item.id)" :icon="['fas', 'heart']"
+                                        style="color: #1fdf64;" />
+                                    <font-awesome-icon v-else :icon="['fas', 'heart']" style="color: #fff;" />
                                 </div>
                                 <div class="icon" @click="addToQueue(item.id)">
                                     <font-awesome-icon :icon="['fas', 'plus']" />
@@ -64,7 +66,8 @@
         <!-- 专辑 -->
         <div class="box-inner" v-show="props.searchType == 10">
             <div class="inner-albums-container">
-                <div class="album-card" v-for="item in props.data.albums" :key="item.id" @click="router.push({name: 'album', query: {id: item.id}})">
+                <div class="album-card" v-for="item in props.data.albums" :key="item.id"
+                    @click="router.push({ name: 'album', query: { id: item.id } })">
                     <div class="cover">
                         <img :src="item.picUrl">
                     </div>
@@ -83,7 +86,8 @@
         <!-- 歌手 -->
         <div class="box-inner" v-show="props.searchType == 100">
             <div class="inner-artist-container">
-                <div class="artist-card" v-for="item in props.data.artists" :key="item.id" @click="router.push({name: 'artist', query: {id: item.id}})">
+                <div class="artist-card" v-for="item in props.data.artists" :key="item.id"
+                    @click="router.push({ name: 'artist', query: { id: item.id } })">
                     <div class="cover">
                         <img :src="item.picUrl">
                     </div>
@@ -101,7 +105,7 @@
         <div class="box-inner" v-show="props.searchType == 1000">
             <div class="inner-playlist-container">
                 <div class="playlist-card" v-for="item in props.data.playlists" :key="item.id"
-                    @click="router.push({ name: 'playlist', query: {id: item.id, type: 'normal' } })">
+                    @click="router.push({ name: 'playlist', query: { id: item.id, type: 'normal' } })">
                     <div class="cover">
                         <img :src="item.coverImgUrl">
                     </div>
@@ -128,6 +132,7 @@
 import { onBeforeMount, onBeforeUpdate } from "vue";
 import { usePlayQueueStore } from "../../stores/playQueue";
 import { useRouter } from "vue-router";
+import { checkLikeMusic, likeMusic } from "../../tools/user";
 
 const router = useRouter();
 const { playQueueState, add, remove, previous, next, playThis } = usePlayQueueStore();
@@ -160,9 +165,8 @@ async function addToQueue(id) {
 }
 
 // TODO: 标记为喜欢的音乐
-function like(id) {
-    console.log("like");
-    console.log(id);
+async function like(id) {
+    await likeMusic(id);
 }
 </script>
 
@@ -413,6 +417,7 @@ function like(id) {
                 background-color: #434242;
                 transition: .5s;
                 filter: drop-shadow(0px 0px 5px #b3b3b3);
+
                 .cover {
                     animation: swing .2s;
                 }
@@ -469,6 +474,7 @@ function like(id) {
                 background-color: #434242;
                 transition: .5s;
                 filter: drop-shadow(0px 0px 5px #b3b3b3);
+
                 .cover {
                     animation: swing .2s;
                 }
@@ -533,6 +539,7 @@ function like(id) {
                 background-color: #434242;
                 transition: .5s;
                 filter: drop-shadow(0px 0px 5px #b3b3b3);
+
                 .cover {
                     animation: swing .2s;
                 }
@@ -557,7 +564,7 @@ function like(id) {
     35% {
         transform: rotate(3deg);
     }
-    
+
     50% {
         transform: rotate(0deg);
     }

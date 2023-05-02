@@ -45,6 +45,7 @@ import { usePlayListStore } from "../stores/playList";
 import { useSysStore } from "../stores/sys";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "../stores/user";
+import { likeMusic } from "../tools/user";
 
 const { topLists } = useTopListStore();
 const { add, playThis } = usePlayQueueStore();
@@ -169,9 +170,8 @@ async function dbPlayEvent(id) {
 }
 
 // like event
-function likeEvent(id) {
-    // TODO
-    console.log(`like ${id}`);
+async function likeEvent(id) {
+    await likeMusic(id);
 }
 
 // add to queue event

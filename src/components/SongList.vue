@@ -6,7 +6,7 @@
         </div>
         <ul class="items">
             <li v-for="item in list">
-                <a @click="jump(item.id)">{{ item.name }}</a>
+                <a @click="jump(item.head.id)">{{ item.head.name }}</a>
             </li>
         </ul>
     </div>

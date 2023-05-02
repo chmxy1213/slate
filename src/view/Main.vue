@@ -63,21 +63,21 @@ onBeforeMount(async () => {
 		await add(id, -1);
 	});
 
-	await listen("event-previous", (event) => {
+	await listen("event-previous", async (event) => {
 		console.log("上一首");
 		console.log(event.event);
 		console.log(event.payload);
-		previous();
+		await previous();
 	});
 
-	await listen("event-next", (event) => {
+	await listen("event-next", async (event) => {
 		console.log("下一首");
 		console.log(event.event);
 		console.log(event.payload);
-		next();
+		await next();
 	});
 
-	// 请求用户歌单信息
+	// 请求用户歌单头部信息
 	let [data, err] = await invoke("get_all_playlist_header", {
 		token: user.token,
 		id: user.id,
@@ -85,14 +85,46 @@ onBeforeMount(async () => {
 	if (data) {
 		data.data.forEach((value) => {
 			if (value.name === "__LIKE__") {
-				playlists.like = value;
+				playlists.like.head = value;
 			} else {
-				playlists.custom.push(value);
+				playlists.custom.push({ head: value, songs: [] });
 			}
 		});
+		console.log(data);
 	} else {
 		console.log("获取用户歌单失败");
 		console.log(err);
+	}
+	// 请求歌单中的所有音乐id
+	// step1: 请求喜欢歌单
+	let [data2, err2] = await invoke("get_allsong_playlist", {
+		token: user.token,
+		id: playlists.like.head.id,
+	}).then(data => [data, null]).catch(err => [null, err]);
+	if (data2) {
+		data2.data.songIds.forEach((value) => {
+			playlists.like.songs.push(value);
+		});
+		console.log(data2);
+	} else {
+		console.log("获取用户歌单失败");
+		console.log(err2);
+	}
+	// step2: 请求自定义歌单
+	for (let i = 0; i < playlists.custom.length; i++) {
+		let [data3, err3] = await invoke("get_allsong_playlist", {
+			token: user.token,
+			id: playlists.custom[i].head.id,
+		}).then(data => [data, null]).catch(err => [null, err]);
+		if (data3) {
+			data3.data.songIds.forEach((value) => {
+				playlists.custom[i].songs.push(value);
+			});
+			console.log(data3);
+		} else {
+			console.log("获取用户歌单失败");
+			console.log(err3);
+		}
 	}
 });
 </script>

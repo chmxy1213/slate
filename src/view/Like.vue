@@ -10,16 +10,16 @@
         <div class="like-box">
             <!-- 我的 -->
             <div v-show="menuSelect == 0" class="inner-box mine-box">
-                <div class="mine-like-card" @click="$router.push({ name: 'playlist', query: { type: 'custom', id: playlists.like.id }})">
+                <div class="mine-like-card" @click="$router.push({ name: 'playlist', query: { type: 'custom', id: playlists.like.head.id }})">
                     <span>喜欢的音乐</span>
                 </div>
                 <div class="mine-playlist-card" v-for="(item, index) in mineCreatePlaylist" :key="index"
-                    @click="$router.push({ name: 'playlist', query: { type: 'custom', id: item.id }})">
+                    @click="$router.push({ name: 'playlist', query: { type: 'custom', id: item.head.id }})">
                     <!-- <img :src="item.coverImg"> -->
                     <img src="/cover/我的名字.jpg">
                     <div class="row">
                         <div class="playlist-name">
-                            <span>{{ item.name }}</span>
+                            <span>{{ item.head.name }}</span>
                         </div>
                         <div class="label">
                             <span>歌单</span>
@@ -82,7 +82,7 @@ import { useUserStore } from "../stores/user";
 const { user, playlists } = useUserStore();
 const menus = ["我的", "歌手", "专辑", "歌单"];
 const menuSelect = ref(0);
-const mineCreatePlaylist = ref([{ id: 0, name: "", coverImg: "" }]);
+const mineCreatePlaylist = ref([{head: { id: 0, name: "", coverImg: "" }}]);
 const artists = ref([
     {
         name: "歌手1", coverImg: "/cover/我的名字.jpg"
@@ -120,6 +120,7 @@ const playlist = ref([
 onBeforeMount(async () => {
     // 用户歌单赋值
     mineCreatePlaylist.value = playlists.custom;
+    console.log(playlists.custom);
 });
 </script>
 

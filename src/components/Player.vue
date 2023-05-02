@@ -106,6 +106,9 @@ const playStyle = ref({
     pause: "fa-play",
 });
 
+// 播放队列切换标记: 位于播放队列为true
+const playQueueSwitch = ref(false);
+
 // 点击播放条事件
 function clickBarEvent(event) {
     // 进度条相对于左侧窗口的偏移量
@@ -203,7 +206,12 @@ async function updateCurTime() {
 
 // 播放列表点击事件
 function goPlayQueue() {
-    router.push({ name: "playQueue" });
+    if (playQueueSwitch.value) {
+        router.back();
+    } else {
+        router.push({ name: "playQueue" });
+    }
+    playQueueSwitch.value = !playQueueSwitch.value;
 }
 
 // 静音事件

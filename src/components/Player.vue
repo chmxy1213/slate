@@ -19,9 +19,10 @@
             </div>
             <div class="fav-btn">
                 <a href="#">
-                    <font-awesome-icon v-if="checkLikeMusic(music.info.id)" :icon="['fas', 'heart']" style="color: #1fdf64;" />
+                    <font-awesome-icon v-if="checkLikeMusic(music.info.id)" :icon="['fas', 'heart']"
+                        style="color: #1fdf64;" />
                     <img v-else src="/fav.svg" style="width: 25px;height: 25px;" />
-                    
+
                 </a>
             </div>
         </div>
@@ -54,10 +55,16 @@
         </div>
         <div class="tools">
             <div class="volume-value" :class="[playState.volumeValueShow ? '' : 'volume-value-none']">
-                <p>{{ playState.volume }}%</p>
+                <p v-if="playState.volume < 80" style="color:#1fdf64;">{{ playState.volume }}%</p>
+                <p v-else style="color:red">{{ playState.volume }}%</p>
             </div>
-            <div id="id-volume" class="volume" :title="'音量:' + playState.volume">
-                <img class="icon" src="/svg/volume.svg" alt="音量调节">
+            <div id="id-volume" class="volume" :title="'音量:' + playState.volume" @click="muteEvent" 
+                @mouseenter="playState.volumeValueShow = true"
+                @mouseleave="playState.volumeValueShow = false">
+                <!-- <img class="icon" src="/svg/volume.svg" alt="音量调节"> -->
+                <font-awesome-icon v-if="playState.volume == 0" :icon="['fas', 'volume-xmark']" />
+                <font-awesome-icon v-else-if="playState.volume <= 80" :icon="['fas', 'volume-low']" />
+                <font-awesome-icon v-else :icon="['fas', 'volume-high']" />
             </div>
             <div class="play-list" title="播放列表" @click="goPlayQueue">
                 <img class="icon" src="/svg/list-icon.svg" alt="播放列表">
@@ -68,7 +75,6 @@
 
 <script setup>
 import { onBeforeMount, onMounted, ref, watch } from "vue";
-import { invoke } from "@tauri-apps/api/tauri";
 import { useRouter } from "vue-router";
 import { useMusicStore } from "../stores/music.js";
 import { usePlayQueueStore } from "../stores/playQueue";
@@ -76,12 +82,13 @@ import { checkLikeMusic } from "../tools/user";
 
 const router = useRouter();
 const { music, load, play, pause } = useMusicStore();
-const { playQueueState, previous, next } = usePlayQueueStore();
+const { previous, next } = usePlayQueueStore();
 
 // 播放栏状态
 const playState = ref({
     volumeValueShow: false,  // 音量百分比显示
     volume: 50,         // 音量百分比
+    volumeBefore: 50,   // 静音之前的音量
     c_minutes: 0,       // 点击播放位置【分】
     c_seconds: 0,       // 点击播放位置【秒】
     cur_minutes: 0,     // 当前播放位置【分】
@@ -120,6 +127,7 @@ function clickBarEvent(event) {
     // audio.value.currentTime = currentTime;
     music.audio.currentTime = currentTime;
 }
+
 
 // 播放事件
 function playEvent() {
@@ -196,6 +204,18 @@ async function updateCurTime() {
 // 播放列表点击事件
 function goPlayQueue() {
     router.push({ name: "playQueue" });
+}
+
+// 静音事件
+function muteEvent() {
+    console.log("mete event");
+    if (playState.value.volume == 0) {
+        playState.value.volume = playState.value.volumeBefore;
+    } else {
+        playState.value.volumeBefore = playState.value.volume;
+        playState.value.volume = 0;
+    }
+    music.audio.volume = playState.value.volume / 100.0;
 }
 
 // 滚轮调节音量
@@ -410,9 +430,10 @@ onMounted(() => {
 
         .volume {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             cursor: pointer;
+            width: 30px;
 
             .icon {
                 width: 28px;

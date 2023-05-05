@@ -52,6 +52,7 @@ import { useSysStore } from "../stores/sys";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "../stores/user";
 import { likeMusic } from "../tools/user";
+import { getMDPromise, ARRS } from "../tools/req";
 
 const { topLists } = useTopListStore();
 const { add, playThis } = usePlayQueueStore();
@@ -263,23 +264,9 @@ async function loadCustomListData(id, token) {
             console.log("empty playlist");
             return;
         } else {
-            const getMusicDetail = async (id) => {
-                let innerRes = await invoke("get_music_detail", { id });
-                if (innerRes.code == 200) {
-                    return innerRes.songs[0];
-                }
-            };
-            let tmp_arr = [];
-            let count = 0;
-            await res.data.songIds.forEach(async (id) => {
-                let _data = await getMusicDetail(id);
-                tmp_arr.push(_data);
-                count++;
-                if (count == res.data.songIds.length) {
-                    songsData.value = processData(tmp_arr);
-                    headerData.value.coverImgUrl = songsData.value[0].picUrl;
-                }
-            });
+            let datas = await ARRS(res.data.songIds, getMDPromise);
+            songsData.value = processData(datas);
+            headerData.value.coverImgUrl = songsData.value[0].picUrl;
         }
     } else {
         console.log(err);

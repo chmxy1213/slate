@@ -17,6 +17,7 @@ import { isPermissionGranted, requestPermission, sendNotification } from "@tauri
 import Card from '../components/Card.vue';
 import { useTopListStore } from "../stores/topList";
 import Loader from "../components/Loader.vue";
+import { ARRS } from "../tools/req";
 
 const { topLists } = useTopListStore();
 
@@ -38,13 +39,27 @@ async function testNootificationEvent() {
 async function init() {
     console.log("正在执行 top list 初始化");
     if (!topLists.init) {
-        topLists.ids.forEach(async (id) => {
-            let res = await invoke("get_playlist_detail", { id: id });
-            console.log(res);
-            if (res.code === 200) {
-                topLists.data.push(res.playlist);
-            }
+        let res = await ARRS(topLists.ids, (id) => {
+            return new Promise((resolve, reject) => {
+                invoke("get_playlist_detail", { id })
+                    .then((res) => {
+                        if (res.code == 200) {
+                            resolve(res.playlist);
+                        }
+                    })
+                    .catch((err) => {
+                        reject(err);
+                    });
+            });
         });
+        topLists.data.push(...res);
+        // topLists.ids.forEach(async (id) => {
+        //     let res = await invoke("get_playlist_detail", { id: id });
+        //     console.log(res);
+        //     if (res.code === 200) {
+        //         topLists.data.push(res.playlist);
+        //     }
+        // });
         topLists.init = true;
     } else {
         console.log("已初始化，跳过初始化程序");
@@ -66,8 +81,11 @@ onBeforeMount(async () => {
     height: 100%;
 
     .load {
+        // relative to parent center
         position: absolute;
-        margin: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
 
     .cards {

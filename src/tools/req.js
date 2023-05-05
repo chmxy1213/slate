@@ -60,5 +60,37 @@ async function reqMusicSource(id) {
     return { url: res.data[0].url };
 }
 
+/**
+ * @description 获取音乐详情
+ * @typedef {Object} MusicSourceObject
+ * @param {number} id 
+ * @returns {Promise<MusicSourceObject>}
+ */
+function getMDPromise(id) {
+    return new Promise((resolve, reject) => {
+        invoke("get_music_detail", { id })
+            .then((res) => {
+                if (res.code == 200) {
+                    resolve(res.songs[0]);
+                }
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+}
 
-export { reqMusicDetail, reqMusicSource };
+/**
+ * @description 异步请求顺序返回
+ * @param {Array<Number>} ids 音乐id数组
+ * @param {Function} fn 请求函数
+ * @returns {Array<Object>}
+ */
+async function ARRS(ids, fn) {
+    let promises = ids.map((item) => {
+        return fn(item);
+    });
+    return Promise.all(promises);
+} 
+
+export { reqMusicDetail, reqMusicSource, getMDPromise, ARRS };

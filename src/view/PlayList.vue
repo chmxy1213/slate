@@ -310,7 +310,12 @@ onBeforeMount(async () => {
     .playlist-header {
         display: flex;
         flex-direction: row;
-        background-color: #457394;
+        // background-color: #457394;
+        background: linear-gradient(to bottom right, #3f13b9, #7b9187);
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        backdrop-filter: saturate(50%) blur(6px);
 
         .cover {
             .four-img {

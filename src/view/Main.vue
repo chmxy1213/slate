@@ -11,6 +11,8 @@
 			<Player />
 		</div>
 	</div>
+	<!-- 右键菜单：右键歌曲添加到歌单 -->
+	<RightClkMenu />
 </template>
 
 <script setup>
@@ -26,10 +28,11 @@ import { usePlayQueueStore } from "../stores/playQueue";
 import { debounceAsync } from "../tools/debounce";
 import { useSysStore } from "../stores/sys"
 import { useUserStore } from "../stores/user";
+import RightClkMenu from "../components/RightClkMenu.vue";
 
 const { music, load, play, pause, initAudio } = useMusicStore();
 const { playQueueState, previous, next, add, remove } = usePlayQueueStore();
-const { scrollToBottom, change } = useSysStore();
+const { scrollToBottom, change, contextMenu } = useSysStore();
 const { user, playlists } = useUserStore();
 
 let ids = [28731108, 34274470, 65533, 65528, 1974443814, 65536, 28563317, 65538];
@@ -49,6 +52,11 @@ async function scrollEvent(event) {
 }
 
 onBeforeMount(async () => {
+	window.addEventListener("click", function (event) {
+		console.log(event);
+		contextMenu.show = false;
+	});
+
 	// check service
 	let state = await invoke("check_server");
 	console.log(state);
@@ -157,6 +165,7 @@ onBeforeMount(async () => {
 		overflow: auto;
 		display: flex;
 		flex-direction: column;
+		position: relative;
 
 		.box {
 			display: flex;

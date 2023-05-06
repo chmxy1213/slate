@@ -1,6 +1,9 @@
 <!-- 表行 -->
 <template>
-    <div class="table-item-container" @dblclick="events[0]((data.id))">
+    <div class="table-item-container" 
+        @dblclick="events[0]((data.id))"
+        @contextmenu="showMenu"
+    >
         <div class="block-one">
             <div class="index">
                 <span class="id">{{ id }}</span>
@@ -45,7 +48,12 @@
 
 <script setup>
 import { checkLikeMusic } from "../../tools/user";
+import { useSysStore } from "../../stores/sys";
+import { invoke } from "@tauri-apps/api";
+import { useUserStore } from "../../stores/user";
 
+const { user, playlists } = useUserStore();
+const { contextMenu } = useSysStore();
 // data: [id, picUrl, name, artists, album, time]
 const props = defineProps({
     id: { type: Number, required: true },
@@ -53,6 +61,36 @@ const props = defineProps({
     events: { type: Array, required: true },
 });
 
+function showMenu(e) {
+    console.log("showMenu");
+    e.preventDefault();
+    contextMenu.x = e.clientX;
+    contextMenu.y = e.clientY;
+    contextMenu.show = true;
+    // 为菜单设置点击事件
+    contextMenu.event = async function(pid) {
+        console.log(`add ${props.data.id} to ${pid}`);
+        for (let i = 0; i < playlists.custom.length; i++) {
+            if (playlists.custom[i].head.id == pid) {
+                if (playlists.custom[i].songs.includes(props.data.id)) {
+                    console.log("already in playlist");
+                    return;
+                }
+            }
+        }
+        let res = await invoke("add_song_to_playlist", {
+            token: user.token,
+            pid,
+            sid: props.data.id,
+        });
+        for (let i = 0; i < playlists.custom.length; i++) {
+            if (playlists.custom[i].head.id == pid) {
+                playlists.custom[i].songs.push(props.data.id);
+            }
+        }
+        console.log(res);
+    };
+}
 </script>
 
 <style scoped lang="less">

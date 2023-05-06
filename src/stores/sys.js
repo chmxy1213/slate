@@ -3,23 +3,20 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 
 export const useSysStore = defineStore("sys", () => {
-    // state: () => ({ scrollToBottom: false }),
-    
-    // getters: {
-    //     getScrollState: (state) => state.scrollToBottom,
-    // },
-
-    // actions: {
-    //     change(state) {
-    //         this.scrollToBottom = state;
-    //     },
-    // },
+    // 滚动条相关
     const scrollToBottom = ref(false);
-
     function change(state) {
         scrollToBottom.value = state;
     }
     const getScrollState = computed(() => scrollToBottom.value);
 
-    return { scrollToBottom, change, getScrollState };
+    // 右键菜单相关
+    const contextMenu = ref({
+        show: false,
+        x: 0,
+        y: 0,
+        event: null,
+    });
+    
+    return { scrollToBottom, change, getScrollState, contextMenu };
 });

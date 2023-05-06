@@ -6,11 +6,16 @@
         <!-- 页面头 -->
         <div class="playlist-header">
             <div class="cover">
-                <div v-if="route.query.type == 'custom'" class="four-img">
-                    <img :src="songsData[0].picUrl">
-                    <img :src="songsData[1].picUrl">
-                    <img :src="songsData[2].picUrl">
-                    <img :src="songsData[3].picUrl">
+                <div v-if="route.query.type == 'custom'">
+                    <div v-if="songsData.length > 4" class="four-img">
+                        <img :src="songsData[0].picUrl">
+                        <img :src="songsData[1].picUrl">
+                        <img :src="songsData[2].picUrl">
+                        <img :src="songsData[3].picUrl">
+                    </div>
+                    <div v-else>
+                        <img :src="songsData[0].picUrl">
+                    </div>
                 </div>
                 <img v-else id="cover" crossorigin="anonymous" :src="headerData.coverImgUrl">
             </div>

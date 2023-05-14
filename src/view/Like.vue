@@ -10,13 +10,19 @@
         <div class="like-box">
             <!-- 我的 -->
             <div v-show="menuSelect == 0" class="inner-box mine-box">
-                <div class="mine-like-card" @click="$router.push({ name: 'playlist', query: { type: 'custom', id: playlists.like.head.id }})">
+                <div class="mine-like-card"
+                    @click="$router.push({ name: 'playlist', query: { type: 'custom', id: playlists.like.head.id } })">
                     <span>喜欢的音乐</span>
                 </div>
                 <div class="mine-playlist-card" v-for="(item, index) in mineCreatePlaylist" :key="index"
-                    @click="$router.push({ name: 'playlist', query: { type: 'custom', id: item.head.id }})">
+                    @click="$router.push({ name: 'playlist', query: { type: 'custom', id: item.head.id } })">
                     <!-- <img :src="item.coverImg"> -->
-                    <img src="/cover/我的名字.jpg">
+                    <!-- <img src="/cover/我的名字.jpg"> -->
+                    <!-- <img :src="getCover(item)"> -->
+                    <img class="cover" v-if="item.head.coverImg != ''" :src="item.head.coverImg">
+                    <div class="cover" v-else>
+                        <font-awesome-icon :icon="['fas', 'music']" style="width:100px;height:100px;"/>
+                    </div>
                     <div class="row">
                         <div class="playlist-name">
                             <span>{{ item.head.name }}</span>
@@ -76,13 +82,13 @@
 
 <script setup>
 import { onBeforeMount, ref } from "vue";
-import { invoke } from "@tauri-apps/api";
 import { useUserStore } from "../stores/user";
+import { getMDPromise } from "../tools/req";
 
-const { user, playlists } = useUserStore();
+const { playlists } = useUserStore();
 const menus = ["我的", "歌手", "专辑", "歌单"];
 const menuSelect = ref(0);
-const mineCreatePlaylist = ref([{head: { id: 0, name: "", coverImg: "" }}]);
+const mineCreatePlaylist = ref([{ head: { id: 0, name: "", coverImg: "" } }]);
 const artists = ref([
     {
         name: "歌手1", coverImg: "/cover/我的名字.jpg"
@@ -117,10 +123,32 @@ const playlist = ref([
     },
 ]);
 
+// 获取歌单封面：歌单里面第一首歌的专辑封面，如果歌单为空，则返回空字符串
+function getAllCover() {
+    mineCreatePlaylist.value = mineCreatePlaylist.value.map((item) => {
+        Object.defineProperty(item.head, "coverImg", {
+            value: "",
+            writable: true,
+            enumerable: true,
+            configurable: true
+        });
+        if (item.songs.length != 0) {
+            getMDPromise(item.songs[0]).then((res) => {
+                item.head.coverImg = res.al.picUrl;
+            }).catch((err) => {
+                console.log(err);
+            });
+        }
+        return item;
+    });
+}
+
 onBeforeMount(async () => {
     // 用户歌单赋值
     mineCreatePlaylist.value = playlists.custom;
+    console.log("playlists.custom");
     console.log(playlists.custom);
+    getAllCover();
 });
 </script>
 
@@ -215,7 +243,7 @@ onBeforeMount(async () => {
                 // background: linear-gradient(to bottom, #3f13b8, #7b9088);
                 background: #333333;
 
-                img {
+                .cover {
                     width: 120px;
                     height: 120px;
                     border-radius: 5px;

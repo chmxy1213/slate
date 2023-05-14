@@ -13,9 +13,6 @@
                 </div>
             </div>
         </div>
-        <div class="menu">
-            <div class="title">删除</div>
-        </div>
     </div>
 </template>
 
@@ -51,15 +48,16 @@ const { contextMenu } = storeToRefs(useSysStore());
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             padding: 10px;
             border-radius: 5px;
             z-index: 1;
             box-shadow: #3e3e3e 0px 0px 5px 0px;
+            white-space: nowrap;
 
             .item {
+                width: 80%;
                 padding: 10px;
-                padding-right: 50px;
                 border-radius: 3px;
             }
 

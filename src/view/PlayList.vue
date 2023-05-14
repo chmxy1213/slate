@@ -13,8 +13,12 @@
                         <img :src="songsData[2].picUrl">
                         <img :src="songsData[3].picUrl">
                     </div>
-                    <div v-else>
+                    <div v-else-if="songsData.length == 1">
                         <img :src="songsData[0].picUrl">
+                    </div>
+                    <div v-else style="background-color: #494949;padding: 10px;">
+                        <font-awesome-icon :icon="['fas', 'music']" style="width:100px;height:100px;" />
+                        <font-awesome-icon :icon="['fas', 'music']" />
                     </div>
                 </div>
                 <img v-else id="cover" crossorigin="anonymous" :src="headerData.coverImgUrl">

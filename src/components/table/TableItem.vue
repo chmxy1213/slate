@@ -35,7 +35,7 @@
         </div>
         <!-- hover icons -->
         <div class="hover-icons">
-            <div class="icon" @click="events[1](data.id)">
+            <div class="icon" @click="events[1](data.id, checkLikeMusic(data.id))">
                 <font-awesome-icon v-if="checkLikeMusic(data.id)" :icon="['fas', 'heart']" style="color: #1fdf64;" />
                 <font-awesome-icon v-else :icon="['fas', 'heart']" style="color: #fff;" />
             </div>

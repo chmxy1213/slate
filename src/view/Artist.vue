@@ -91,7 +91,7 @@
                                 </div>
                                 <!-- hover icons -->
                                 <div class="hover-icons">
-                                    <div class="icon" @click="likeEvent(item.id)">
+                                    <div class="icon" @click="likeEvent(item.id, checkLikeMusic(item.id))">
                                         <font-awesome-icon v-if="checkLikeMusic(item.id)" :icon="['fas', 'heart']"
                                             style="color: #1fdf64;" />
                                         <font-awesome-icon v-else :icon="['fas', 'heart']" style="color: #fff;" />
@@ -141,7 +141,7 @@ import { usePlayQueueStore } from "../stores/playQueue";
 import { invoke } from "@tauri-apps/api";
 import { useSysStore } from "../stores/sys";
 import { storeToRefs } from "pinia";
-import { checkLikeMusic, likeMusic } from "../tools/user";
+import { checkLikeMusic, likeMusicOrNot } from "../tools/user";
 
 const { add, playThis } = usePlayQueueStore();
 const { scrollToBottom } = storeToRefs(useSysStore());
@@ -217,8 +217,8 @@ async function dbPlayEvent(id) {
 }
 
 // like event
-async function likeEvent(id) {
-    await likeMusic(id);
+async function likeEvent(id, flag) {
+    await likeMusicOrNot(id, flag);
 }
 
 // add to queue event

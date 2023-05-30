@@ -49,7 +49,7 @@
                             </div>
                             <!-- hover icons -->
                             <div class="hover-icons">
-                                <div class="icon" @click="like(item.id)">
+                                <div class="icon" @click="like(item.id, checkLikeMusic(item.id))">
                                     <font-awesome-icon v-if="checkLikeMusic(item.id)" :icon="['fas', 'heart']"
                                         style="color: #1fdf64;" />
                                     <font-awesome-icon v-else :icon="['fas', 'heart']" style="color: #fff;" />
@@ -132,7 +132,7 @@
 import { onBeforeMount, onBeforeUpdate } from "vue";
 import { usePlayQueueStore } from "../../stores/playQueue";
 import { useRouter } from "vue-router";
-import { checkLikeMusic, likeMusic } from "../../tools/user";
+import { checkLikeMusic, likeMusicOrNot } from "../../tools/user";
 
 const router = useRouter();
 const { playQueueState, add, remove, previous, next, playThis } = usePlayQueueStore();
@@ -165,8 +165,8 @@ async function addToQueue(id) {
 }
 
 // TODO: 标记为喜欢的音乐
-async function like(id) {
-    await likeMusic(id);
+async function like(id, flag) {
+    await likeMusicOrNot(id, flag);
 }
 </script>
 

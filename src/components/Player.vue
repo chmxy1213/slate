@@ -21,7 +21,8 @@
                 <a href="#">
                     <font-awesome-icon v-if="checkLikeMusic(music.info.id)" :icon="['fas', 'heart']"
                         style="color: #1fdf64;" />
-                    <img v-else src="/fav.svg" style="width: 25px;height: 25px;" />
+                    <img v-else src="/fav.svg" style="width: 25px;height: 25px;" 
+                    @click="likeEvent(music.info.id, checkLikeMusic(music.info.id))"/>
 
                 </a>
             </div>
@@ -78,7 +79,7 @@ import { onBeforeMount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useMusicStore } from "../stores/music.js";
 import { usePlayQueueStore } from "../stores/playQueue";
-import { checkLikeMusic } from "../tools/user";
+import { checkLikeMusic, likeMusicOrNot } from "../tools/user";
 
 const router = useRouter();
 const { music, load, play, pause } = useMusicStore();
@@ -238,6 +239,11 @@ function changeVolumeEvent(event) {
     setTimeout(() => {
         playState.value.volumeValueShow = false;
     }, 1000);
+}
+
+// 喜欢或取消喜欢音乐
+async function likeEvent(id, flag) {
+    await likeMusicOrNot(id, flag);
 }
 
 // 在此初始化

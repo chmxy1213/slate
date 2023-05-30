@@ -16,7 +16,7 @@ export async function likeMusicOrNot(id, flag) {
     if (flag) {
         tp = "del";
     } else {
-        flag = "add";
+        tp = "add";
     }
     let [res, err] = await invoke("update_song_to_playlist", {
         token: user.token,

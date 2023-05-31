@@ -32,8 +32,8 @@
             </div>
             <div class="card-form">
                 <div class="form-item">
-                    <label for="login-username">电子邮箱或昵称</label>
-                    <input type="text" id="login-username" placeholder="Email address or NickName"
+                    <label for="login-username">昵称</label>
+                    <input type="text" id="login-username" placeholder="NickName"
                         v-model="loginForm.username" />
                 </div>
                 <div class="form-item">

@@ -18,7 +18,7 @@
                 </div>
                 <div class="line"></div>
                 <div class="table-body">
-                    <div class="table-item" v-for="(item, index) in props.data.songs" :key="index">
+                    <div class="table-item" v-for="(item, index) in props.data.songs" :key="index"  @contextmenu="showMenu($event, item.id)">
                         <div class="table-item-container" @dblclick="doubleClkEvent(item.id)">
                             <div class="block-one">
                                 <div class="index">
@@ -133,9 +133,14 @@ import { onBeforeMount, onBeforeUpdate } from "vue";
 import { usePlayQueueStore } from "../../stores/playQueue";
 import { useRouter } from "vue-router";
 import { checkLikeMusic, likeMusicOrNot } from "../../tools/user";
+import { useSysStore } from "../../stores/sys";
+import { useUserStore } from "../../stores/user";
+import { invoke } from "@tauri-apps/api";
 
 const router = useRouter();
 const { playQueueState, add, remove, previous, next, playThis } = usePlayQueueStore();
+const { contextMenu } = useSysStore();
+const { user, playlists } = useUserStore();
 
 const header = ["#", "标题", "专辑", "时长"];
 const props = defineProps({
@@ -167,6 +172,41 @@ async function addToQueue(id) {
 // TODO: 标记为喜欢的音乐
 async function like(id, flag) {
     await likeMusicOrNot(id, flag);
+}
+
+
+// 右键菜单
+function showMenu(e, sid) {
+    console.log("showMenu");
+    e.preventDefault();
+    contextMenu.x = e.clientX;
+    contextMenu.y = e.clientY;
+    contextMenu.show = true;
+    // 为菜单设置点击事件
+    contextMenu.event = async function(pid) {
+        console.log(`add ${props.data.id} to ${pid}`);
+        for (let i = 0; i < playlists.custom.length; i++) {
+            if (playlists.custom[i].head.id == pid) {
+                if (playlists.custom[i].songs.includes(sid)) {
+                    console.log("already in playlist");
+                    return;
+                }
+            }
+        }
+        let res = await invoke("update_song_to_playlist", {
+            token: user.token,
+            pid,
+            sid: sid,
+            tp: "add",
+        });
+        for (let i = 0; i < playlists.custom.length; i++) {
+            if (playlists.custom[i].head.id == pid) {
+                playlists.custom[i].songs.push(sid);
+            }
+        }
+        contextMenu.show = false;
+        console.log(res);
+    };
 }
 </script>
 

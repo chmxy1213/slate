@@ -89,6 +89,7 @@ function showMenu(e) {
                 playlists.custom[i].songs.push(props.data.id);
             }
         }
+        contextMenu.show = false;
         console.log(res);
     };
 }

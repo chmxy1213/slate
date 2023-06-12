@@ -141,7 +141,7 @@ import { usePlayQueueStore } from "../stores/playQueue";
 import { invoke } from "@tauri-apps/api";
 import { useSysStore } from "../stores/sys";
 import { storeToRefs } from "pinia";
-import { checkLikeMusic, likeMusicOrNot } from "../tools/user";
+import { checkLikeMusic, updateCustomPlaylist } from "../tools/user";
 
 const { add, playThis } = usePlayQueueStore();
 const { scrollToBottom } = storeToRefs(useSysStore());
@@ -218,7 +218,7 @@ async function dbPlayEvent(id) {
 
 // like event
 async function likeEvent(id, flag) {
-    await likeMusicOrNot(id, flag);
+    await updateCustomPlaylist(0, id, flag, true);
 }
 
 // add to queue event

@@ -1,9 +1,6 @@
 <!-- 表行 -->
 <template>
-    <div class="table-item-container" 
-        @dblclick="events[0]((data.id))"
-        @contextmenu="showMenu"
-    >
+    <div class="table-item-container" @dblclick="events[0]((data.id))" @contextmenu="showMenu">
         <div class="block-one">
             <div class="index">
                 <span class="id">{{ id }}</span>
@@ -42,6 +39,9 @@
             <div class="icon" @click="events[2](data.id)">
                 <font-awesome-icon :icon="['fas', 'plus']" />
             </div>
+            <div class="icon" v-if="tp.tp == 'custom' && !tp.like" @click="events[1](tp.pid, data.id, true, tp.like)">
+                <font-awesome-icon :icon="['fas', 'trash']" />
+            </div>
         </div>
     </div>
 </template>
@@ -51,6 +51,7 @@ import { checkLikeMusic } from "../../tools/user";
 import { useSysStore } from "../../stores/sys";
 import { invoke } from "@tauri-apps/api";
 import { useUserStore } from "../../stores/user";
+import { onBeforeMount } from "vue";
 
 const { user, playlists } = useUserStore();
 const { contextMenu } = useSysStore();
@@ -59,6 +60,7 @@ const props = defineProps({
     id: { type: Number, required: true },
     data: { type: Object, required: true },
     events: { type: Array, required: true },
+    tp: { type: Object, required: true },  // 歌单类型
 });
 
 function showMenu(e) {
@@ -68,7 +70,7 @@ function showMenu(e) {
     contextMenu.y = e.clientY;
     contextMenu.show = true;
     // 为菜单设置点击事件
-    contextMenu.event = async function(pid) {
+    contextMenu.event = async function (pid) {
         console.log(`add ${props.data.id} to ${pid}`);
         for (let i = 0; i < playlists.custom.length; i++) {
             if (playlists.custom[i].head.id == pid) {

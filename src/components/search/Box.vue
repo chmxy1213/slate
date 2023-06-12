@@ -132,7 +132,7 @@
 import { onBeforeMount, onBeforeUpdate } from "vue";
 import { usePlayQueueStore } from "../../stores/playQueue";
 import { useRouter } from "vue-router";
-import { checkLikeMusic, likeMusicOrNot } from "../../tools/user";
+import { checkLikeMusic, updateCustomPlaylist } from "../../tools/user";
 import { useSysStore } from "../../stores/sys";
 import { useUserStore } from "../../stores/user";
 import { invoke } from "@tauri-apps/api";
@@ -171,7 +171,7 @@ async function addToQueue(id) {
 
 // TODO: 标记为喜欢的音乐
 async function like(id, flag) {
-    await likeMusicOrNot(id, flag);
+    await updateCustomPlaylist(0, id, flag, true);
 }
 
 

@@ -79,7 +79,7 @@ import { onBeforeMount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useMusicStore } from "../stores/music.js";
 import { usePlayQueueStore } from "../stores/playQueue";
-import { checkLikeMusic, likeMusicOrNot } from "../tools/user";
+import { checkLikeMusic, updateCustomPlaylist } from "../tools/user";
 
 const router = useRouter();
 const { music, load, play, pause } = useMusicStore();
@@ -243,7 +243,7 @@ function changeVolumeEvent(event) {
 
 // 喜欢或取消喜欢音乐
 async function likeEvent(id, flag) {
-    await likeMusicOrNot(id, flag);
+    await updateCustomPlaylist(0, id, flag, true);
 }
 
 // 在此初始化

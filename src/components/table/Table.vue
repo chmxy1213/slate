@@ -16,7 +16,7 @@
         <div class="line"></div>
         <div class="table-body">
             <div class="table-item" v-for="(item, index) in data">
-                <TableItem :id="index + 1" :data="item" :key="index" :events="events" />
+                <TableItem :id="index + 1" :data="item" :key="index" :events="events" :tp="tp" />
             </div>
         </div>
     </div>
@@ -30,6 +30,7 @@ const props = defineProps({
     header: { type: Array, required: true },
     data: { type: Array, required: true },
     events: { type: Array, required: true },  // 事件列表 [play, like, addToQueue]
+    tp: { type: Object, required: true },  // 歌单类型
 });
 </script>
 

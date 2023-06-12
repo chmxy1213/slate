@@ -44,7 +44,7 @@
                     <i class="fa fa fa-play"></i>
                 </div>
             </div>
-            <Table :header="tableHeader" :data="songsData" :events="[dbPlayEvent, likeEvent, addToQueueEvent]" />
+            <Table :header="tableHeader" :data="songsData" :events="[dbPlayEvent, updateEvent, addToQueueEvent]" :tp="tp" />
         </div>
     </div>
 </template>
@@ -60,7 +60,7 @@ import { usePlayListStore } from "../stores/playList";
 import { useSysStore } from "../stores/sys";
 import { storeToRefs } from "pinia";
 import { useUserStore } from "../stores/user";
-import { likeMusicOrNot } from "../tools/user";
+import { updateCustomPlaylist } from "../tools/user";
 import { getMDPromise, ARRS } from "../tools/req";
 
 const { topLists } = useTopListStore();
@@ -79,6 +79,7 @@ const headerData = ref({
 });
 const songsData = ref([]);
 const tableHeader = ["#", "标题", "专辑", "时长"];
+const tp = ref({tp: "", like: false, pid: 0});
 
 // TODO: this fucntion is some same with `req.js`.
 // process the request's data
@@ -184,9 +185,9 @@ async function dbPlayEvent(id) {
     await playThis(0);
 }
 
-// like event
-async function likeEvent(id, flag) {
-    await likeMusicOrNot(id, flag);
+// update custom playlist: add or remove
+async function updateEvent(pid, sid, flag, _default) {
+    await updateCustomPlaylist(pid, sid, flag, _default)
 }
 
 // add to queue event
@@ -262,6 +263,11 @@ async function loadCustomListData(id, token) {
         .then(res => [res, null])
         .catch(err => [null, err]);
     if (err === null) {
+        if (res.data.playlist.name === "__LIKE__") {
+            tp.value.like = true;
+        }
+        tp.value.pid = res.data.playlist.id;
+        
         headerData.value = {
             name: res.data.playlist.name === "__LIKE__" ? "我喜欢的音乐" : res.data.playlist.name,
             // coverImgUrl: data.data.playlist.coverImgUrl,
@@ -284,6 +290,7 @@ async function loadCustomListData(id, token) {
 
 onBeforeMount(async () => {
     let _type = route.query.type;
+    tp.value.tp = _type;
     if (_type == "top") {
         await loadTopListData(route.query.id * 1);
     } else if (_type == "normal") {

@@ -78,10 +78,11 @@ function showMenu(e) {
                 }
             }
         }
-        let res = await invoke("add_song_to_playlist", {
+        let res = await invoke("update_song_to_playlist", {
             token: user.token,
             pid,
             sid: props.data.id,
+            tp: "add",
         });
         for (let i = 0; i < playlists.custom.length; i++) {
             if (playlists.custom[i].head.id == pid) {

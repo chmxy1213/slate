@@ -32,7 +32,7 @@
                     }}</span>
                     <span v-else>{{ headerData.description }}</span>
                 </div>
-                <div class="playlist-playcount">
+                <div class="playlist-playcount" v-if="tp.tp != 'custom'">
                     <p>播放&nbsp;{{ headerData.playCount }}&nbsp;次</p>
                 </div>
             </div>
@@ -267,7 +267,7 @@ async function loadCustomListData(id, token) {
             tp.value.like = true;
         }
         tp.value.pid = res.data.playlist.id;
-        
+
         headerData.value = {
             name: res.data.playlist.name === "__LIKE__" ? "我喜欢的音乐" : res.data.playlist.name,
             // coverImgUrl: data.data.playlist.coverImgUrl,

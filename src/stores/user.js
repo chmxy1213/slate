@@ -24,6 +24,10 @@ export const useUserStore = defineStore("user", () => {
         localStorage.setItem("user", JSON.stringify(user.value));
     }
 
+    function remove() {
+        localStorage.removeItem("user");
+    }
+
     // TODO check token
     // async function check() {
     //     let res = await invoke("check", { token: user.value.token });
@@ -40,5 +44,5 @@ export const useUserStore = defineStore("user", () => {
             user.value.token = p.token;
         }
     }
-    return { user, playlists, save, load };
+    return { user, playlists, save, remove, load };
 });

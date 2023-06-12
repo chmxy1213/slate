@@ -7,6 +7,7 @@
             <i class="fa fa-angle-right"></i>
         </div>
         <a href="javascript:;">{{ user.nickname }}</a>
+        <div class="logout" @click="logout">登出</div>
     </header>
 </template>
 
@@ -14,8 +15,15 @@
 import { useUserStore } from '../stores/user';
 import { useRouter } from 'vue-router';
 
-const { user } = useUserStore();
+const { user, remove } = useUserStore();
 const router = useRouter();
+
+function logout() {
+    remove();
+    router.push({name: "login"});
+    location.reload();
+    console.log("登出");
+}
 </script>
 
 <style scoped lang="less">
@@ -57,6 +65,23 @@ const router = useRouter();
         color: #fff;
         font-size: 20px;
         font-weight: 600;
+    }
+
+    .logout {
+        font-size: 15px;
+        font-weight: 400px;
+        margin-left: 20px;
+        padding: 2px 5px 2px 5px;
+        cursor: pointer;
+        border: 1px solid #c1c1c1;
+        border-radius: 5px;
+        color: #c1c1c1;
+    }
+
+    .logout:hover {
+        padding: 3px 6px 3px 6px;
+        border: 1px solid #f1f1f1;
+        color: #f1f1f1;
     }
 }
 </style>

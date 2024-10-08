@@ -86,7 +86,7 @@
 import { onBeforeMount, ref } from "vue";
 import { usePlayQueueStore } from "../stores/playQueue";
 import { useRoute } from "vue-router";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core"
 
 const route = useRoute();
 const { add, playThis } = usePlayQueueStore();

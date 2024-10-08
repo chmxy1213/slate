@@ -51,7 +51,7 @@
 
 <script setup>
 import { onBeforeMount, ref, watch } from "vue";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core"
 import Table from "../components/table/Table.vue";
 import { useRoute } from "vue-router";
 import { useTopListStore } from "../stores/topList";

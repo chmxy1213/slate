@@ -34,7 +34,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core"
 import { useUserStore } from "../stores/user";
 import { useRouter } from "vue-router";
 

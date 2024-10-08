@@ -1,5 +1,5 @@
 // 和用户相关的工具函数
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core"
 import { useUserStore } from "../stores/user";
 
 const { user, playlists } = useUserStore();

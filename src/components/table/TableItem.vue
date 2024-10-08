@@ -49,7 +49,7 @@
 <script setup>
 import { checkLikeMusic } from "../../tools/user";
 import { useSysStore } from "../../stores/sys";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core"
 import { useUserStore } from "../../stores/user";
 import { onBeforeMount } from "vue";
 

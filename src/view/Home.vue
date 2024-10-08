@@ -12,8 +12,9 @@
 
 <script setup>
 import { onBeforeMount, ref } from "vue";
-import { invoke } from "@tauri-apps/api";
-import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/api/notification";
+import { invoke } from "@tauri-apps/api/core"
+import { isPermissionGranted, requestPermission } from "@tauri-apps/api/notification";
+import { sendNotification } from '@tauri-apps/plugin-notification';
 import Card from '../components/Card.vue';
 import { useTopListStore } from "../stores/topList";
 import Loader from "../components/Loader.vue";

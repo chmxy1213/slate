@@ -18,7 +18,7 @@
 <script setup>
 import { onBeforeMount, onMounted } from "vue";
 import { emit, listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core"
 import Nav from "../components/Nav.vue";
 import "../assets/css/base.css";
 import Menus from "../components/Menus.vue";

@@ -23,7 +23,7 @@
 
 <script setup>
 import { onBeforeMount, ref, watch } from "vue";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core"
 import { useSearchStore } from "../stores/search";
 import Box from "../components/search/Box.vue";
 import Loader from "../components/Loader.vue";

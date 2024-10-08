@@ -75,8 +75,8 @@
 <script setup>
 import { onBeforeMount, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { invoke } from "@tauri-apps/api";
-import { message } from "@tauri-apps/api/dialog";
+import { invoke } from "@tauri-apps/api/core"
+import { message } from '@tauri-apps/plugin-dialog';
 import { useUserStore } from "../stores/user";
 
 const { user, save } = useUserStore();

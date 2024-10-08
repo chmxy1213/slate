@@ -1,5 +1,5 @@
 // 数据请求类的工具
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core"
 
 // Request music details.
 async function reqMusicDetail(id) {

@@ -138,7 +138,7 @@
 import { ref, onBeforeMount, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { usePlayQueueStore } from "../stores/playQueue";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core"
 import { useSysStore } from "../stores/sys";
 import { storeToRefs } from "pinia";
 import { checkLikeMusic, updateCustomPlaylist } from "../tools/user";

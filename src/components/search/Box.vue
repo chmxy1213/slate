@@ -135,7 +135,7 @@ import { useRouter } from "vue-router";
 import { checkLikeMusic, updateCustomPlaylist } from "../../tools/user";
 import { useSysStore } from "../../stores/sys";
 import { useUserStore } from "../../stores/user";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core"
 
 const router = useRouter();
 const { playQueueState, add, remove, previous, next, playThis } = usePlayQueueStore();
